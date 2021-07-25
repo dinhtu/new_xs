@@ -8,6 +8,10 @@ $max = 10;
     }
 </style>
 @section('content')
+<div class="card-footer">
+    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev]) }}"> Prev</a>
+    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next]) }}"> Next</a>
+</div>
 <table class="table table-responsive-sm table-bordered table-striped text-center">
     <thead>
         <tr>
