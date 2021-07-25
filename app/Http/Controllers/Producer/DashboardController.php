@@ -26,7 +26,7 @@ class DashboardController extends Controller
             $info = [];
         }
 
-        $detail = XsDay::whereDate('day', Carbon::parse($day)->addDays(-1))->with(['xsDetails'])->first();
+        $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
         $xsDetail = $detail->xsDetails ?? [];
         $data = [];
         foreach ($info as $key => $item) {
