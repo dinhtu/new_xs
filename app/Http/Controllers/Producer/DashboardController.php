@@ -31,6 +31,8 @@ class DashboardController extends Controller
         $data = [];
         $countExist = 0;
         $total = 0;
+        $tmpExist = [];
+        $arrAll = [];
         foreach ($info as $key => $item) {
             $tmp = [];
             foreach ($item as $keyItem => $value) {
@@ -40,10 +42,27 @@ class DashboardController extends Controller
                         if (intval($tmpDetail->item) == $keyItem) {
                             $exist = true;
                             $countExist++;
+                            if (!isset($tmpExist[$keyItem])) {
+                                $tmpExist[$keyItem] = [
+                                    'value' => 1,
+                                    'key' => $keyItem,
+                                ];
+                            } else {
+                                $tmpExist[$keyItem]['value']++;
+                            }
                         }
                         $total++;
                     }
                 }
+                if (!isset($arrAll[$keyItem])) {
+                    $arrAll[$keyItem] = [
+                        'value' => 1,
+                        'key' => $keyItem,
+                    ];
+                } else {
+                    $arrAll[$keyItem]['value']++;
+                }
+                $arrAll[$keyItem]['exist'] = $exist;
                 $tmp[] = [
                     'key' => $keyItem,
                     'value' => $value,
@@ -53,6 +72,8 @@ class DashboardController extends Controller
             $tmp = collect($tmp)->sortByDesc('value')->toArray();
             $data[$key] = $tmp;
         }
+        $tmpExist = !empty($tmpExist) ? collect($tmpExist)->sortByDesc('value')->toArray() : [];
+        $arrAll = collect($arrAll)->sortByDesc('value')->toArray();
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
             'data' => $data,
@@ -60,6 +81,8 @@ class DashboardController extends Controller
             'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
             'countExist' => $countExist,
             'total' => $total,
+            'arrAll' => $arrAll,
+            'tmpExist' => $tmpExist,
         ]);
     }
 
