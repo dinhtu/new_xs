@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIME_ZONE','Asia/Tokyo'),
+    'timezone' => 'asia/ho_chi_minh',
 
     /*
     |--------------------------------------------------------------------------
