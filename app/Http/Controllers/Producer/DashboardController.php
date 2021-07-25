@@ -26,7 +26,7 @@ class DashboardController extends Controller
             $info = [];
         }
 
-        $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
+        $detail = XsDay::whereDate('day', Carbon::parse($day)->addDays(-1))->with(['xsDetails'])->first();
         $xsDetail = $detail->xsDetails ?? [];
         $data = [];
         foreach ($info as $key => $item) {
@@ -35,7 +35,7 @@ class DashboardController extends Controller
                 $exist = false;
                 if ($xsDetail) {
                     foreach ($xsDetail as $tmpDetail) {
-                        if ($tmpDetail->number_order == $key && intval($tmpDetail->item) == $keyItem) {
+                        if (intval($tmpDetail->item) == $keyItem) {
                             $exist = true;
                         }
                     }
