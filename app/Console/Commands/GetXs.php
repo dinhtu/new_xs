@@ -56,7 +56,7 @@ class GetXs extends Command
         $now = Carbon::parse(Carbon::now()->format('Y-m-d'));
         // $url = 'https://ketqua.net/xo-so.php?ngay=';
         $url = 'https://xskt.com.vn/xsmb/ngay-';
-        while ($startDate < $now) {
+        while ($startDate <= $now) {
             DB::beginTransaction();
             Log::channel('log_batch')->info($startDate->format('Y-m-d'));
             if (XsDay::whereDate('day', $startDate->format('Y-m-d'))->exists()) {
