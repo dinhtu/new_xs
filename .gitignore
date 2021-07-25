@@ -1,10 +1,7 @@
 /dist
-/node_modules
 /database/database.sqlite
 /public/hot
 /public/storage
-/public/js
-/public/css
 /public/fonts
 /public/webfonts
 /public/scss
