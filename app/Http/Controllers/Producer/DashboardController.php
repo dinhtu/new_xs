@@ -42,13 +42,15 @@ class DashboardController extends Controller
                         if (intval($tmpDetail->item) == $keyItem) {
                             $exist = true;
                             $countExist++;
-                            if (!isset($tmpExist[$keyItem])) {
-                                $tmpExist[$keyItem] = [
-                                    'value' => 1,
-                                    'key' => $keyItem,
-                                ];
-                            } else {
-                                $tmpExist[$keyItem]['value']++;
+                            if ($tmpDetail->number_order == $key) {
+                                if (!isset($tmpExist[$keyItem])) {
+                                    $tmpExist[$keyItem] = [
+                                        'value' => 1,
+                                        'key' => $keyItem,
+                                    ];
+                                } else {
+                                    $tmpExist[$keyItem]['value']++;
+                                }
                             }
                         }
                         $total++;
