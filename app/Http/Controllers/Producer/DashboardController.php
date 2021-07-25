@@ -29,6 +29,8 @@ class DashboardController extends Controller
         $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
         $xsDetail = $detail->xsDetails ?? [];
         $data = [];
+        $countExist = 0;
+        $total = 0;
         foreach ($info as $key => $item) {
             $tmp = [];
             foreach ($item as $keyItem => $value) {
@@ -37,7 +39,9 @@ class DashboardController extends Controller
                     foreach ($xsDetail as $tmpDetail) {
                         if (intval($tmpDetail->item) == $keyItem) {
                             $exist = true;
+                            $countExist++;
                         }
+                        $total++;
                     }
                 }
                 $tmp[] = [
@@ -54,6 +58,8 @@ class DashboardController extends Controller
             'data' => $data,
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
             'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
+            'countExist' => $countExist,
+            'total' => $total,
         ]);
     }
 

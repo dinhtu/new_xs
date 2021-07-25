@@ -8,6 +8,7 @@ $max = 10;
     }
 </style>
 @section('content')
+<h1>{{$countExist}}</h1>/<h2>{{$total/}}</h2>
 <div class="card-footer">
     <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev]) }}"> Prev</a>
     <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next]) }}"> Next</a>
