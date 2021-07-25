@@ -1,0 +1,11 @@
+.time-picker-column-minutes {
+  display: none !important;
+}
+.datetimepicker .datepicker {
+  width: 327px !important;
+  max-width: 327px !important;
+  min-width: 327px !important;
+}
+.datepicker-container .datepicker-controls .datepicker-container-label {
+  flex-flow: row-reverse;
+}

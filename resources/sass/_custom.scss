@@ -1,0 +1,94 @@
+// Here you can add other styles
+
+.c-app {
+    background-color: #F8FAFC;
+}
+.c-main {
+    padding: 20px 0 40px 0;
+}
+.c-header.c-header-fixed{
+    top:0px;
+}
+
+.click-file{
+    cursor:pointer;
+}
+#app {
+    width: 100%;
+}
+.btn-w-120 {
+    width: 120px;
+}
+.btn-w-100 {
+    min-width: 100px;
+}
+.txt-warning {
+    font-size: 11px;
+    margin-left: 5px;
+}
+.txt-name-detail {
+    font-size: 12px;
+}
+.txt-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+.box-action {
+    float: right;
+}
+.txt-info {
+    font-size: 14px;
+    font-weight: 600;
+}
+.a-link {
+    color: #3490DC;
+    font-size: 14px;
+}
+.tag {
+    padding: 3px 8px 4px;
+    background: #3490DC;
+    color: #fff;
+    border: 1px solid #3490DC;
+    border-radius: 4px;
+}
+.txt-paginate {
+    color: #E0E0E0
+}
+.card-body-res {
+    padding: 5px;
+}
+.group-date {
+    width: 50%;
+    margin: 0 auto;
+}
+.m-t-6 {
+    margin-top: 6px;
+}
+.box-shadow {
+    box-shadow: 3px 3px 6px #00000029;
+}    
+.p-t-6 {
+    padding-top: 6px;
+}
+.p-l-0 {
+    padding-left: 0px;
+}
+.p-l-20 {
+    padding-left: 15px;
+}
+.role-option {
+    position: absolute;
+    top: 34px;
+    opacity: 0;
+}
+.error {
+    color: red;
+}
+@media only screen and (max-width: 767px) {
+    .group-date {
+      width: 100%;
+    }
+}
+.error {
+    color: red;
+}

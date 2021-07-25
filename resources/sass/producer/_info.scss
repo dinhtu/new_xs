@@ -1,0 +1,146 @@
+$prime-color: #3490DC;
+$warning-color: #F36262;
+$basic-color: #E0E0E0;
+
+.timeline_block {
+	border: 1px solid $basic-color;
+    border-radius: 4px;
+    box-shadow: 3px 3px 6px #00000029;
+    padding: 11px 14px;
+
+    .timeline_info {
+    	.timeline_txt {
+    		color: #000;
+
+    		.timeline_ttl{
+    			display: flex;
+
+    			p {
+    				margin: auto 15px auto 0px;
+    				font-size: 14px;
+    			}
+
+    			.detail_tag {
+    				margin: auto 0px;
+    			}
+    		}
+
+    		.timeline_content {
+    			font-size: 10px;
+				margin: 0;
+				padding-bottom: 8px;
+    		}
+    	}
+    }
+
+    .timeline_code {
+    	display: flex;
+    	flex-direction: column;
+    	align-items: flex-end;
+    }
+}
+
+
+.time-line-box {
+	width: 100%;
+
+	.swiper-container {
+		width: 95%; 
+		overflow-y: auto;
+
+		.swiper-wrapper{
+			display: inline-flex;
+			flex-direction: row;
+			overflow: hidden;
+			justify-content: center;
+			width: 100%;
+			flex-grow: 1;
+
+			.swiper-slide {
+				text-align: center;
+				font-size: 12px;
+				width: 25%;
+				height: 100%;
+				position: relative;
+
+			}
+		}
+	}
+
+	.swiper-container::-webkit-scrollbar-track{
+		background:#a8a8a8b6;
+	}
+	.swiper-container::-webkit-scrollbar{
+		height: 2px;
+	}
+	.swiper-container::-webkit-scrollbar-thumb{
+		background: #4F4F4F !important;
+	}	
+}
+
+.timeline_card {
+	margin-bottom: 12px;
+}
+
+.timeline_txt .timeline_content {
+	font-size: 10px;
+}
+ .timeline_txt .timeline_ttl p {
+	font-size: 14px;
+}
+
+.swiper-slide {
+    color: $basic-color;
+	.inner-circle {
+		position: relative;
+		z-index: 999;
+	}
+}
+.swiper-slide.active {
+	span {
+		color: $prime-color
+	}
+    .inner-circle {
+        background-color: $prime-color;
+		z-index: 99
+    }
+    &::after {
+        border-color: $prime-color;
+    }
+}
+
+.swiper-slide.current {
+	&::after {
+        border-color: $basic-color;
+    }
+    .inner-circle {
+        width: 12px;
+        height: 12px;
+        background-color: $prime-color;
+        background-clip: content-box;
+        border: 2px solid #5CB85C;
+        margin-top: -1.2px;
+		z-index: 99
+    }
+}
+
+.swiper-slide.error {
+	span {
+		color: $warning-color
+	}
+    .inner-circle {
+        background-color: $warning-color
+    }
+}
+.swiper-slide::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 22px;
+    width: 98%;
+    border-bottom: 1px solid $basic-color;
+}
+.swiper-slide:last-child::after {
+    display: none;
+}

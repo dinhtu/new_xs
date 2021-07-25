@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+  <g id="cross" data-name="cross" transform="translate(-30.5 735.5)">
+    <line id="l1" data-name="l1" y2="30" transform="translate(45.5 -735.5)" fill="none" stroke="#dadfe3" stroke-width="3"/>
+    <line id="l2" data-name="l2" x1="30" transform="translate(30.5 -720.5)" fill="none" stroke="#dadfe3" stroke-width="3"/>
+  </g>
+</svg>

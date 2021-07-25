@@ -1,0 +1,4 @@
+<svg id="delete-btn" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+  <circle id="delete-btn1" data-name="delete-btn1" cx="10" cy="10" r="10" fill="red"/>
+  <line id="delete-btn2" data-name="delete-btn2" x2="10" transform="translate(5 10)" fill="none" stroke="#fff" stroke-width="4"/>
+</svg>
