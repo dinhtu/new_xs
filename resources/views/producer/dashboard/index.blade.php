@@ -563,4 +563,8 @@ $max = 10;
         </tr>
     </tbody>
 </table>
+<div class="card-footer">
+    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev]) }}"> Prev</a>
+    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next]) }}"> Next</a>
+</div>
 @endsection

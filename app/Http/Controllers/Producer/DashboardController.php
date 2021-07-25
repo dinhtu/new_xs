@@ -51,7 +51,9 @@ class DashboardController extends Controller
         }
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
-            'data' => $data
+            'data' => $data,
+            'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
+            'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
         ]);
     }
 
