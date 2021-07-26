@@ -75,22 +75,20 @@ class GetXs extends Command
             $table = $crawlerPage->filter('table.result');
 
             $stt = 0;
-            $table->each(function (Crawler $nodeTable) use (&$stt, $xsDay) {
+            $existDetail = false;
+            $table->each(function (Crawler $nodeTable) use (&$stt, $xsDay, &$existDetail) {
                 $nodeTable->filter('em')->each(function (Crawler $nodeDev) use (&$stt, $xsDay) {
-                    if (is_numeric(trim($nodeDev->text()))) {
-                        $xsDetail = new XsDetail();
-                        $xsDetail->xs_day_id = $xsDay->id;
-                        $xsDetail->origin = trim($nodeDev->text());
-                        $xsDetail->item = substr(trim($nodeDev->text()), -2, 2);
-                        $xsDetail->number_order = $stt;
-                        if (!$xsDetail->save()) {
-                            return false;
-                        }
+                    $xsDetail = new XsDetail();
+                    $xsDetail->xs_day_id = $xsDay->id;
+                    $xsDetail->origin = trim($nodeDev->text());
+                    $xsDetail->item = substr(trim($nodeDev->text()), -2, 2);
+                    $xsDetail->number_order = $stt;
+                    if (!$xsDetail->save()) {
+                        return false;
                     }
                     $stt++;
                 });
-                
-                $nodeTable->filter('p')->each(function (Crawler $nodeDev) use (&$stt, $xsDay) {
+                $nodeTable->filter('p')->each(function (Crawler $nodeDev) use (&$stt, $xsDay, &$existDetail) {
                     $br = explode("<br>", $nodeDev->html());
                     foreach ($br as $itemBr) {
                         $space = explode(" ", $itemBr);
@@ -100,6 +98,7 @@ class GetXs extends Command
                             $xsDetail->origin = trim($itemSpace);
                             $xsDetail->item = substr(trim($itemSpace), -2, 2);
                             $xsDetail->number_order = $stt;
+                            $existDetail = true;
                             if (!$xsDetail->save()) {
                                 return false;
                             }
@@ -108,7 +107,9 @@ class GetXs extends Command
                     }
                 });
             });
-            DB::commit();
+            if ($existDetail) {
+                DB::commit();
+            }
             Log::channel('log_batch')->info($startDate->format('Y-m-d'). '-complete');
             $startDate = $startDate->addDays(1);
         }
