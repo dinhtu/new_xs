@@ -45,7 +45,7 @@ class Check extends Command
     {
         Log::channel('log_batch')->info('start batch file');
         $maxDate = Predict::max('day');
-        $startDate = empty($maxDate) ? "2021-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
+        $startDate = empty($maxDate) ? "2010-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
         // $startDate = "2021-07-24";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         
@@ -92,8 +92,8 @@ class Check extends Command
                 $predict->day = Carbon::parse($startDate);
                 $predict->detail = json_encode($dataAll);
                 $predict->save();
+                Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'). '-complete');
             }
-            Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'). '-complete');
             $startDate =  Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
         }
         Log::channel('log_batch')->info('complete');

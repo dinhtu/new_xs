@@ -42,12 +42,13 @@ class checkNew extends Command
      */
     public function handle()
     {
-        $startDate = "2021-01-01";
+        $startDate = "2010-01-01";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         $zero = 0;
         $one = 0;
         $two = 0;
         $max = 0;
+        $totalMoney = 0;
         while (Carbon::parse($startDate) < $now) {
             Log::channel('log_batch')->info($startDate);
             $info = Predict::whereDate('day', Carbon::parse($startDate))->first();
@@ -56,7 +57,7 @@ class checkNew extends Command
             } else {
                 $info = [];
             }
-
+            
             $detail = XsDay::whereDate('day', Carbon::parse($startDate))->with(['xsDetails'])->first();
             $xsDetail = $detail->xsDetails ?? [];
             $data = [];
@@ -113,32 +114,19 @@ class checkNew extends Command
                 if ($i >= 3) {
                     continue;
                 }
-                if ($value['exist']) {
-                    $count++;
+                if ($xsDetail && $value['exist']) {
+                    foreach ($xsDetail as $tmpDetail) {
+                        if (intval($tmpDetail->item) == $value['key']) {
+                            $count++;
+                        }
+                    }
                 }
                 $i++;
             }
-            switch ($count) {
-                case 0:
-                    $zero++;
-                    break;
-                case 1:
-                    $one++;
-                    break;
-                case 2:
-                    $two++;
-                    break;
-                case 3:
-                    $max++;
-                    break;
-            }
+            Log::channel('log_batch')->info($count);
+            $totalMoney += (($count * 400) - 329);
             $startDate =  Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
         }
-        dd([
-            'zero' => $zero,
-            'one' => $one,
-            'two' => $two,
-            'max' => $max,
-        ]);
+        dd($totalMoney);
     }
 }
