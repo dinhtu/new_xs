@@ -57,7 +57,12 @@ class Check extends Command
                 $dayOld = XsDetail::where([
                     'item' => $xsDetail->item,
                     'number_order' => $xsDetail->number_order,
-                ])->with(['xsDay'])->get();
+                ])
+                ->with(['xsDay'])
+                ->whereHas('xsDay', function($q) use ($startDate) {
+                    $q->whereDate('day', '<', Carbon::parse($startDate));
+                })
+                ->get();
                 foreach ($dayOld as $dayTmp) {
                     // $dataAll[$xsDetail->number_order][] = Carbon::parse($dayTmp->xsDay->day)->addDays(1);
                     // $dayNext = XsDay::whereDate('day', Carbon::parse($dayTmp->xsDay->day)->addDays(1))
@@ -67,12 +72,12 @@ class Check extends Command
                         }
                     })
                         ->with([
-                            'xsDetailNext' => function($q) use ($xsDetail){
+                            'xsDetailNext' => function($q) use ($xsDetail) {
                                 $q->where('number_order', $xsDetail->number_order);
                             }
                         ])
                         ->whereHas(
-                            'xsDetailNext', function($q) use ($xsDetail){
+                            'xsDetailNext', function($q) use ($xsDetail) {
                                 $q->where('number_order', $xsDetail->number_order);
                             }
                         )
