@@ -9,7 +9,15 @@
                 <svg class="c-sidebar-nav-icon">
                     <use xlink:href="{{ url('assets/icons/coreui/free.svg#cui-home') }}"></use>
                 </svg>
-                ダッシュボード
+                Home
+            </a>
+        </li>
+        <li class="c-sidebar-nav-item">
+            <a class="c-sidebar-nav-link" href="{{ route('producer.result.index') }}">
+                <svg class="c-sidebar-nav-icon">
+                    <use xlink:href="{{ url('assets/icons/coreui/free.svg#cui-hand-point-up') }}"></use>
+                </svg>
+                Result
             </a>
         </li>
         
@@ -17,12 +25,12 @@
             <a class="c-sidebar-nav-link c-sidebar-nav-dropdown-toggle" href="#">
                 <svg class="c-sidebar-nav-icon">
                     <use xlink:href="{{ url('assets/icons/coreui/free.svg#cui-settings') }}"></use>
-                </svg> マイアカウント
+                </svg> Setting
             </a>
             <ul class="c-sidebar-nav-dropdown-items">
                 <li class="c-sidebar-nav-item">
                     <a class="c-sidebar-nav-link" href="/logout">
-                        <span class="c-sidebar-nav-icon"></span> ログアウト
+                        <span class="c-sidebar-nav-icon"></span> Logout
                     </a>
                 </li>
             </ul>
