@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\XsDay;
 use App\Models\XsDetail;
 use App\Models\Predict;
+use App\Models\Result;
 use Carbon\Carbon;
 use Log;
 
@@ -42,7 +43,7 @@ class checkNew extends Command
      */
     public function handle()
     {
-        $startDate = "2010-01-01";
+        $startDate = Carbon::parse(XsDay::max('day'))->addDays(1)->format('Y-m-d');
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         $zero = 0;
         $one = 0;
@@ -50,8 +51,8 @@ class checkNew extends Command
         $max = 0;
         $totalMoney = 0;
         while (Carbon::parse($startDate) < $now) {
-            Log::channel('log_batch')->info($startDate);
-            $info = Predict::whereDate('day', Carbon::parse($startDate))->first();
+            Log::channel('log_batch')->info('result:'. $startDate);
+            $info = Predict::whereDate('day', Carbon::parse($startDate))->where('type', 3)->first();
             if ($info) {
                 $info = json_decode($info->detail, true);
             } else {
@@ -123,10 +124,17 @@ class checkNew extends Command
                 }
                 $i++;
             }
-            Log::channel('log_batch')->info($count);
-            $totalMoney += (($count * 400) - 329);
+            
+            if ($info) {
+                $totalMoney += (($count * 400) - 329);
+                $result = new Result();
+                $result->day = Carbon::parse($startDate);
+                $result->total = $count;
+                $result->save();
+                Log::channel('log_batch')->info('save_result_complete_'.Carbon::parse($startDate)->format('Y-m-d'));
+            }
             $startDate =  Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
         }
-        dd($totalMoney);
+        Log::channel('log_batch')->info('result complete');
     }
 }
