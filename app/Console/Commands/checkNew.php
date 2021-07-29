@@ -17,7 +17,7 @@ class checkNew extends Command
      *
      * @var string
      */
-    protected $signature = 'command:checkNew';
+    protected $signature = 'command:result';
 
     /**
      * The console command description.
