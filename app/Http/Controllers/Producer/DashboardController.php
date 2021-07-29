@@ -19,7 +19,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $day = $request->day ?? Carbon::now()->format('Y-m-d');
-        $info = Predict::whereDate('day', Carbon::parse($day))->first();
+        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 3)->first();
         if ($info) {
             $info = json_decode($info->detail, true);
         } else {
@@ -28,10 +28,6 @@ class DashboardController extends Controller
 
         $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
         $xsDetail = $detail->xsDetails ?? [];
-        $data = [];
-        $countExist = 0;
-        $total = 0;
-        $tmpExist = [];
         $arrAll = [];
         foreach ($info as $key => $item) {
             $tmp = [];
@@ -41,19 +37,7 @@ class DashboardController extends Controller
                     foreach ($xsDetail as $tmpDetail) {
                         if (intval($tmpDetail->item) == $keyItem) {
                             $exist = true;
-                            $countExist++;
-                            if ($tmpDetail->number_order == $key) {
-                                if (!isset($tmpExist[$keyItem])) {
-                                    $tmpExist[$keyItem] = [
-                                        'value' => 1,
-                                        'key' => $keyItem,
-                                    ];
-                                } else {
-                                    $tmpExist[$keyItem]['value']++;
-                                }
-                            }
                         }
-                        $total++;
                     }
                 }
                 if (!isset($arrAll[$keyItem])) {
@@ -65,26 +49,15 @@ class DashboardController extends Controller
                     $arrAll[$keyItem]['value']++;
                 }
                 $arrAll[$keyItem]['exist'] = $exist;
-                $tmp[] = [
-                    'key' => $keyItem,
-                    'value' => $value,
-                    'exist' => $exist
-                ];
             }
-            $tmp = collect($tmp)->sortByDesc('value')->toArray();
-            $data[$key] = $tmp;
+            
         }
-        $tmpExist = !empty($tmpExist) ? collect($tmpExist)->sortByDesc('value')->toArray() : [];
         $arrAll = collect($arrAll)->sortByDesc('value')->toArray();
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
-            'data' => $data,
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
             'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
-            'countExist' => $countExist,
-            'total' => $total,
             'arrAll' => $arrAll,
-            'tmpExist' => $tmpExist,
         ]);
     }
 

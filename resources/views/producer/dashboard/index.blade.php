@@ -8,7 +8,6 @@ $max = 10;
     }
 </style>
 @section('content')
-<!-- <h1>{{$countExist}}</h1><h4>{{$total}}</h4> -->
 <div class="card-footer">
     <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev]) }}"> Prev</a>
     <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next]) }}"> Next</a>
@@ -44,33 +43,6 @@ $max = 10;
             </div>
         </div>
         <div class="col-sm-6">
-        <div class="card">
-                <div class="card-header">
-                <strong>Kết quả</strong>
-                </div>
-                <div class="card-body">
-                    <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
-                        <tbody>
-                        @php
-                        $i = 1;
-                        @endphp
-                        @foreach ($tmpExist as $item)
-                            @php
-                            if($i > $max) {
-                                continue;
-                            }
-                            $i++;
-                            @endphp
-                            <tr class="btn-success">
-                                <td>{{$item['key']}}</td>
-                                <td>{{$item['value']}}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 <div class="card-footer">
