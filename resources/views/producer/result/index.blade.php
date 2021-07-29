@@ -22,10 +22,10 @@ $max = 10;
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <canvas id="myChart1" height="100"></canvas>
+                            <canvas id="myChart1" height="200"></canvas>
                         </div>
                         <div class="col-sm-6">
-                            <canvas id="myChart2" height="100"></canvas>
+                            <canvas id="myChart2" height="200"></canvas>
                         </div>
                     </div>
                 </div>
@@ -39,10 +39,10 @@ $max = 10;
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm-6">
-                            <canvas id="myChart" height="100"></canvas>
+                            <canvas id="myChart" height="200"></canvas>
                         </div>
                         <div class="col-sm-6">
-                            <canvas id="myChart3" height="100"></canvas>
+                            <canvas id="myChart3" height="200"></canvas>
                         </div>
                     </div>
                 </div>
