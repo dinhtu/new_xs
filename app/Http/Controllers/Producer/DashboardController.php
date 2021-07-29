@@ -28,7 +28,7 @@ class DashboardController extends Controller
 
         $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
         $xsDetail = $detail->xsDetails ?? [];
-        $arrAll = [];
+        $arrAll3 = [];
         foreach ($info as $key => $item) {
             $tmp = [];
             foreach ($item as $keyItem => $value) {
@@ -40,24 +40,96 @@ class DashboardController extends Controller
                         }
                     }
                 }
-                if (!isset($arrAll[$keyItem])) {
-                    $arrAll[$keyItem] = [
+                if (!isset($arrAll3[$keyItem])) {
+                    $arrAll3[$keyItem] = [
                         'value' => 1,
                         'key' => $keyItem,
                     ];
                 } else {
-                    $arrAll[$keyItem]['value']++;
+                    $arrAll3[$keyItem]['value']++;
                 }
-                $arrAll[$keyItem]['exist'] = $exist;
+                $arrAll3[$keyItem]['exist'] = $exist;
             }
             
         }
-        $arrAll = collect($arrAll)->sortByDesc('value')->toArray();
+        $arrAll3 = collect($arrAll3)->sortByDesc('value')->toArray();
+
+        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 5)->first();
+        if ($info) {
+            $info = json_decode($info->detail, true);
+        } else {
+            $info = [];
+        }
+
+        $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
+        $xsDetail = $detail->xsDetails ?? [];
+        $arrAll5 = [];
+        foreach ($info as $key => $item) {
+            $tmp = [];
+            foreach ($item as $keyItem => $value) {
+                $exist = false;
+                if ($xsDetail) {
+                    foreach ($xsDetail as $tmpDetail) {
+                        if (intval($tmpDetail->item) == $keyItem) {
+                            $exist = true;
+                        }
+                    }
+                }
+                if (!isset($arrAll5[$keyItem])) {
+                    $arrAll5[$keyItem] = [
+                        'value' => 1,
+                        'key' => $keyItem,
+                    ];
+                } else {
+                    $arrAll5[$keyItem]['value']++;
+                }
+                $arrAll5[$keyItem]['exist'] = $exist;
+            }
+            
+        }
+        $arrAll5 = collect($arrAll5)->sortByDesc('value')->toArray();
+
+        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 7)->first();
+        if ($info) {
+            $info = json_decode($info->detail, true);
+        } else {
+            $info = [];
+        }
+
+        $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
+        $xsDetail = $detail->xsDetails ?? [];
+        $arrAll7 = [];
+        foreach ($info as $key => $item) {
+            $tmp = [];
+            foreach ($item as $keyItem => $value) {
+                $exist = false;
+                if ($xsDetail) {
+                    foreach ($xsDetail as $tmpDetail) {
+                        if (intval($tmpDetail->item) == $keyItem) {
+                            $exist = true;
+                        }
+                    }
+                }
+                if (!isset($arrAll7[$keyItem])) {
+                    $arrAll7[$keyItem] = [
+                        'value' => 1,
+                        'key' => $keyItem,
+                    ];
+                } else {
+                    $arrAll7[$keyItem]['value']++;
+                }
+                $arrAll7[$keyItem]['exist'] = $exist;
+            }
+            
+        }
+        $arrAll7 = collect($arrAll7)->sortByDesc('value')->toArray();
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
             'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
-            'arrAll' => $arrAll,
+            'arrAll3' => $arrAll3,
+            'arrAll5' => $arrAll5,
+            'arrAll7' => $arrAll7,
         ]);
     }
 
