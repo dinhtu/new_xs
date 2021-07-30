@@ -43,7 +43,7 @@ class checkNew extends Command
      */
     public function handle()
     {
-        $startDate = Carbon::parse(XsDay::max('day'))->addDays(1)->format('Y-m-d');
+        $startDate = Carbon::parse(Result::max('day'))->addDays(1)->format('Y-m-d');
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         $zero = 0;
         $one = 0;

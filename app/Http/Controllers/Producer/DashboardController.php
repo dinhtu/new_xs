@@ -170,6 +170,8 @@ class DashboardController extends Controller
             'backGround' => $backGround,
             'dataInMonthMoney' => $dataInMonthMoney,
             'totalInMonth' => $totalInMonth,
+            'prevMonth' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
+            'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
         ]);
     }
 

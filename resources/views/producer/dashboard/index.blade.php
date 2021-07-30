@@ -48,6 +48,10 @@ $max = 10;
                 <strong>Ratio. Total : {{number_format($totalInMonth)}}</strong>
                 </div>
                 <div class="card-body">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prevMonth]) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $nextMonth]) }}"> Next</a>
+                </div>
                     <div class="row">
                         <div class="col-sm-12">
                             <canvas id="myChart"></canvas>
