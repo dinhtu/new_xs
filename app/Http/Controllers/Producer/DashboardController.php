@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\XsDay;
 use App\Models\XsDetail;
 use App\Models\Predict;
+use App\Models\Result;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -123,6 +124,42 @@ class DashboardController extends Controller
             
         }
         $arrAll2 = collect($arrAll2)->sortByDesc('value')->toArray();
+
+        $day = $request->day ?? Carbon::now()->format('Y-m-d');
+        $info = Result::whereMonth('day', Carbon::parse($day)->format('m'))
+            ->whereYear('day', Carbon::parse($day)->format('Y'))->orderBy('day')->get();
+
+        $pointInDay = 10;
+        $dataInMonthMoney = [];
+        $backGround = [];
+        $totalInMonth = 0;
+        foreach ($info as $key => $item) {
+            if (isset($dataInMonthMoney[number_format($item->total*$pointInDay*80000 - $pointInDay * 21900*3)])) {
+                $dataInMonthMoney[number_format($item->total*$pointInDay*80000 - $pointInDay * 21900*3)]++;
+            } else {
+                $dataInMonthMoney[number_format($item->total*$pointInDay*80000 - $pointInDay * 21900*3)] = 1;
+            }
+            $totalInMonth += $item->total*$pointInDay*80000 - $pointInDay * 21900*3;
+            $class = 'Gray';
+            switch ($item->total) {
+                case 0:
+                    $class = 'Gray';
+                    break;
+                case 1:
+                    $class = '#66FFFF';
+                    break;
+                case 2:
+                    $class = '#00CC33';
+                    break;
+                case 3:
+                    $class = '#006666';
+                    break;
+                default:
+                    $class = 'Red';
+            }
+            $backGround[number_format($item->total*$pointInDay*80000 - $pointInDay * 21900*3)] = $class;
+        }
+
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
@@ -130,6 +167,9 @@ class DashboardController extends Controller
             'arrAll3' => $arrAll3,
             'arrAll1' => $arrAll1,
             'arrAll2' => $arrAll2,
+            'backGround' => $backGround,
+            'dataInMonthMoney' => $dataInMonthMoney,
+            'totalInMonth' => $totalInMonth,
         ]);
     }
 
