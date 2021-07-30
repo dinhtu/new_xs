@@ -54,7 +54,7 @@ class DashboardController extends Controller
         }
         $arrAll3 = collect($arrAll3)->sortByDesc('value')->toArray();
 
-        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 5)->first();
+        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 1)->first();
         if ($info) {
             $info = json_decode($info->detail, true);
         } else {
@@ -63,7 +63,7 @@ class DashboardController extends Controller
 
         $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
         $xsDetail = $detail->xsDetails ?? [];
-        $arrAll5 = [];
+        $arrAll1 = [];
         foreach ($info as $key => $item) {
             $tmp = [];
             foreach ($item as $keyItem => $value) {
@@ -75,21 +75,21 @@ class DashboardController extends Controller
                         }
                     }
                 }
-                if (!isset($arrAll5[$keyItem])) {
-                    $arrAll5[$keyItem] = [
+                if (!isset($arrAll1[$keyItem])) {
+                    $arrAll1[$keyItem] = [
                         'value' => 1,
                         'key' => $keyItem,
                     ];
                 } else {
-                    $arrAll5[$keyItem]['value']++;
+                    $arrAll1[$keyItem]['value']++;
                 }
-                $arrAll5[$keyItem]['exist'] = $exist;
+                $arrAll1[$keyItem]['exist'] = $exist;
             }
             
         }
-        $arrAll5 = collect($arrAll5)->sortByDesc('value')->toArray();
+        $arrAll1 = collect($arrAll1)->sortByDesc('value')->toArray();
 
-        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 7)->first();
+        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 2)->first();
         if ($info) {
             $info = json_decode($info->detail, true);
         } else {
@@ -98,7 +98,7 @@ class DashboardController extends Controller
 
         $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
         $xsDetail = $detail->xsDetails ?? [];
-        $arrAll7 = [];
+        $arrAll2 = [];
         foreach ($info as $key => $item) {
             $tmp = [];
             foreach ($item as $keyItem => $value) {
@@ -110,26 +110,26 @@ class DashboardController extends Controller
                         }
                     }
                 }
-                if (!isset($arrAll7[$keyItem])) {
-                    $arrAll7[$keyItem] = [
+                if (!isset($arrAll2[$keyItem])) {
+                    $arrAll2[$keyItem] = [
                         'value' => 1,
                         'key' => $keyItem,
                     ];
                 } else {
-                    $arrAll7[$keyItem]['value']++;
+                    $arrAll2[$keyItem]['value']++;
                 }
-                $arrAll7[$keyItem]['exist'] = $exist;
+                $arrAll2[$keyItem]['exist'] = $exist;
             }
             
         }
-        $arrAll7 = collect($arrAll7)->sortByDesc('value')->toArray();
+        $arrAll2 = collect($arrAll2)->sortByDesc('value')->toArray();
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
             'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
             'arrAll3' => $arrAll3,
-            'arrAll5' => $arrAll5,
-            'arrAll7' => $arrAll7,
+            'arrAll1' => $arrAll1,
+            'arrAll2' => $arrAll2,
         ]);
     }
 

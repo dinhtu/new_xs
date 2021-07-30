@@ -45,7 +45,7 @@ $max = 10;
         <div class="col-sm-6">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán 5</strong>
+                <strong>Dự đoán 2</strong>
                 </div>
                 <div class="card-body">
                     <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
@@ -53,7 +53,7 @@ $max = 10;
                         @php
                         $i = 1;
                         @endphp
-                        @foreach ($arrAll5 as $item)
+                        @foreach ($arrAll2 as $item)
                             @php
                             if($i > $max) {
                                 continue;
@@ -73,7 +73,7 @@ $max = 10;
         <div class="col-sm-6">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán 7</strong>
+                <strong>Dự đoán 1</strong>
                 </div>
                 <div class="card-body">
                     <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
@@ -81,7 +81,7 @@ $max = 10;
                         @php
                         $i = 1;
                         @endphp
-                        @foreach ($arrAll7 as $item)
+                        @foreach ($arrAll1 as $item)
                             @php
                             if($i > $max) {
                                 continue;

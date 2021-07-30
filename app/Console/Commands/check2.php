@@ -10,14 +10,14 @@ use Carbon\Carbon;
 use DB;
 use Log;
 
-class Check5 extends Command
+class Check2 extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:check5';
+    protected $signature = 'command:check2';
 
     /**
      * The console command description.
@@ -43,14 +43,14 @@ class Check5 extends Command
      */
     public function handle()
     {
-        Log::channel('log_batch')->info('start batch file 5');
-        $maxDate = Predict::where('type', 5)->max('day');
+        Log::channel('log_batch')->info('start batch file 2');
+        $maxDate = Predict::where('type', 2)->max('day');
         $startDate = empty($maxDate) ? "2010-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
         //$startDate = "2020-04-02";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         
         while (Carbon::parse($startDate) < $now) {
-            Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d').'-type-5');
+            Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d').'-type-2');
             $day = XsDay::whereDate('day', Carbon::parse($startDate)->addDays(-1))->with(['xsDetails'])->first();
             $dataAll = [];
             foreach ($day->xsDetails as $xsDetail) {
@@ -65,7 +65,7 @@ class Check5 extends Command
                 ->get();
                 foreach ($dayOld as $dayTmp) {
                     $dayNext = XsDay::where(function($q) use ($dayTmp) {
-                        for ($i = 1; $i <= 5; $i++) { 
+                        for ($i = 1; $i <= 2; $i++) { 
                             $q->orWhereDate('day', Carbon::parse($dayTmp->xsDay->day)->addDays($i));
                         }
                     })
@@ -92,10 +92,10 @@ class Check5 extends Command
             if ($dataAll) {
                 $predict = new Predict();
                 $predict->day = Carbon::parse($startDate);
-                $predict->type = 5;
+                $predict->type = 2;
                 $predict->detail = json_encode($dataAll);
                 $predict->save();
-                Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'). '-complete-type-5');
+                Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'). '-complete-type-2');
             }
             $startDate =  Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
         }
