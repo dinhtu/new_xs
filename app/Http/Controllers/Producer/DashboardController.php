@@ -51,10 +51,25 @@ class DashboardController extends Controller
                 }
                 $arrAll3[$keyItem]['exist'] = $exist;
             }
-            
+        }
+        foreach ($arrAll3 as $key => $value) {
+            $exist = false;
+            $countExist = 0;
+            foreach ($xsDetail as $tmpDetail) {
+                if (intval($tmpDetail->item) == intval($value['key'])) {
+                    $exist = true;
+                    $countExist++;
+                }
+            }
+            if ($exist) {
+                if (!isset($arrAll3[$key]['count'])) {
+                    $arrAll3[$key]['count'] = $countExist;
+                } else {
+                    $arrAll3[$key]['count'] += $countExist;
+                }
+            }
         }
         $arrAll3 = collect($arrAll3)->sortByDesc('value')->toArray();
-
         $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 1)->first();
         if ($info) {
             $info = json_decode($info->detail, true);
@@ -69,6 +84,7 @@ class DashboardController extends Controller
             $tmp = [];
             foreach ($item as $keyItem => $value) {
                 $exist = false;
+                // $countExit = isset($arrAll1[$keyItem]['count']) ? $arrAll1[$keyItem]['count'] : 0;
                 if ($xsDetail) {
                     foreach ($xsDetail as $tmpDetail) {
                         if (intval($tmpDetail->item) == $keyItem) {
@@ -80,13 +96,16 @@ class DashboardController extends Controller
                     $arrAll1[$keyItem] = [
                         'value' => 1,
                         'key' => $keyItem,
+                        'count' => 1
                     ];
                 } else {
                     $arrAll1[$keyItem]['value']++;
                 }
+                if ($exist) {
+                    $arrAll1[$keyItem]['count']++;
+                }
                 $arrAll1[$keyItem]['exist'] = $exist;
             }
-            
         }
         $arrAll1 = collect($arrAll1)->sortByDesc('value')->toArray();
 
@@ -159,6 +178,10 @@ class DashboardController extends Controller
             }
             $backGround[number_format($item->total*$pointInDay*80000 - $pointInDay * 21900*3)] = $class;
         }
+        $dataCompare = [];
+        foreach ($dataInMonthMoney as $key => $value) {
+            $dataCompare[$key . '(' . $value .')'] = $value;
+        }
 
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
@@ -168,7 +191,7 @@ class DashboardController extends Controller
             'arrAll1' => $arrAll1,
             'arrAll2' => $arrAll2,
             'backGround' => $backGround,
-            'dataInMonthMoney' => $dataInMonthMoney,
+            'dataInMonthMoney' => $dataCompare,
             'totalInMonth' => $totalInMonth,
             'prevMonth' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
             'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),

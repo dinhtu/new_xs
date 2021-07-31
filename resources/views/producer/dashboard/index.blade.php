@@ -33,7 +33,7 @@ $max = 10;
                             $i++;
                             @endphp
                             <tr class="{{$item['exist'] ? 'btn-success' : ''}}">
-                                <td>{{$item['key']}}</td>
+                                <td>{{sprintf('%02d', $item['key']);}} {{$item['exist'] && $item['count'] != 1 ? '('.$item['count'].')' : ''}}</td>
                                 <td>{{$item['value']}}</td>
                             </tr>
                         @endforeach
@@ -79,7 +79,7 @@ $max = 10;
                             $i++;
                             @endphp
                             <tr class="{{$item['exist'] ? 'btn-success' : ''}}">
-                                <td>{{$item['key']}}</td>
+                                <td>{{sprintf('%02d', $item['key']);}}</td>
                                 <td>{{$item['value']}}</td>
                             </tr>
                         @endforeach
@@ -107,7 +107,7 @@ $max = 10;
                             $i++;
                             @endphp
                             <tr class="{{$item['exist'] ? 'btn-success' : ''}}">
-                                <td>{{$item['key']}}</td>
+                                <td>{{sprintf('%02d', $item['key']);}}</td>
                                 <td>{{$item['value']}}</td>
                             </tr>
                         @endforeach
