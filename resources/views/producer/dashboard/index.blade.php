@@ -73,7 +73,7 @@ $max = 10;
                 </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <canvas id="myChart1" height="100"></canvas>
+                            <canvas id="myChart1"></canvas>
                         </div>
                     </div>
                 </div>
