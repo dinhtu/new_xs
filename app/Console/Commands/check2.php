@@ -17,7 +17,7 @@ class Check2 extends Command
      *
      * @var string
      */
-    protected $signature = 'command:check2';
+    // protected $signature = 'command:check2';
 
     /**
      * The console command description.
