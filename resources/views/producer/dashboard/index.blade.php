@@ -8,10 +8,7 @@ $max = 10;
     }
 </style>
 @section('content')
-<div class="card-footer">
-    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev]) }}"> Prev</a>
-    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next]) }}"> Next</a>
-</div>
+
 <div class="fade-in">
     <div class="row">
         <div class="col-sm-7">
@@ -20,6 +17,10 @@ $max = 10;
                 <strong>Dự đoán 3</strong>
                 </div>
                 <div class="card-body">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev]) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next]) }}"> Next</a>
+                </div>
                     <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
                         <tbody>
                         @php
@@ -60,67 +61,25 @@ $max = 10;
                 </div>
             </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán 2</strong>
+                <strong>Year. Total : {{number_format($totalYear)}}</strong>
                 </div>
                 <div class="card-body">
-                    <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
-                        <tbody>
-                        @php
-                        $i = 1;
-                        @endphp
-                        @foreach ($arrAll2 as $item)
-                            @php
-                            if($i > $max) {
-                                continue;
-                            }
-                            $i++;
-                            @endphp
-                            <tr class="{{$item['exist'] ? 'btn-success' : ''}}">
-                                <td>{{sprintf('%02d', $item['key']);}}</td>
-                                <td>{{$item['value']}}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prevMonth]) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $nextMonth]) }}"> Next</a>
                 </div>
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="card">
-                <div class="card-header">
-                <strong>Dự đoán 1</strong>
-                </div>
-                <div class="card-body">
-                    <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
-                        <tbody>
-                        @php
-                        $i = 1;
-                        @endphp
-                        @foreach ($arrAll1 as $item)
-                            @php
-                            if($i > $max) {
-                                continue;
-                            }
-                            $i++;
-                            @endphp
-                            <tr class="{{$item['exist'] ? 'btn-success' : ''}}">
-                                <td>{{sprintf('%02d', $item['key']);}}</td>
-                                <td>{{$item['value']}}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <canvas id="myChart1" height="100"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="card-footer">
-    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev]) }}"> Prev</a>
-    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next]) }}"> Next</a>
 </div>
 @endsection
 @section('javascript')
@@ -142,10 +101,29 @@ const config = {
   options: {}
 };
 
+const data1 = {
+  labels: {!! json_encode(array_keys($dataInYear), JSON_UNESCAPED_UNICODE) !!},
+  datasets: [{
+    label: 'year',
+    backgroundColor: 'red',
+    borderColor: 'red',
+    data: JSON.parse('{{ json_encode(array_values($dataInYear)) }}'),
+  }]
+};
+const config1 = {
+  type: 'line',
+  data: data1,
+  options: {}
+};
+
 $(function() {
     var myChart = new Chart(
     document.getElementById('myChart'),
     config
+  );
+  var myChart1 = new Chart(
+    document.getElementById('myChart1'),
+    config1
   );
  
 });

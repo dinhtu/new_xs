@@ -70,79 +70,6 @@ class DashboardController extends Controller
             }
         }
         $arrAll3 = collect($arrAll3)->sortByDesc('value')->toArray();
-        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 1)->first();
-        if ($info) {
-            $info = json_decode($info->detail, true);
-        } else {
-            $info = [];
-        }
-
-        $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
-        $xsDetail = $detail->xsDetails ?? [];
-        $arrAll1 = [];
-        foreach ($info as $key => $item) {
-            $tmp = [];
-            foreach ($item as $keyItem => $value) {
-                $exist = false;
-                // $countExit = isset($arrAll1[$keyItem]['count']) ? $arrAll1[$keyItem]['count'] : 0;
-                if ($xsDetail) {
-                    foreach ($xsDetail as $tmpDetail) {
-                        if (intval($tmpDetail->item) == $keyItem) {
-                            $exist = true;
-                        }
-                    }
-                }
-                if (!isset($arrAll1[$keyItem])) {
-                    $arrAll1[$keyItem] = [
-                        'value' => 1,
-                        'key' => $keyItem,
-                        'count' => 1
-                    ];
-                } else {
-                    $arrAll1[$keyItem]['value']++;
-                }
-                if ($exist) {
-                    $arrAll1[$keyItem]['count']++;
-                }
-                $arrAll1[$keyItem]['exist'] = $exist;
-            }
-        }
-        $arrAll1 = collect($arrAll1)->sortByDesc('value')->toArray();
-
-        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 2)->first();
-        if ($info) {
-            $info = json_decode($info->detail, true);
-        } else {
-            $info = [];
-        }
-
-        $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
-        $xsDetail = $detail->xsDetails ?? [];
-        $arrAll2 = [];
-        foreach ($info as $key => $item) {
-            $tmp = [];
-            foreach ($item as $keyItem => $value) {
-                $exist = false;
-                if ($xsDetail) {
-                    foreach ($xsDetail as $tmpDetail) {
-                        if (intval($tmpDetail->item) == $keyItem) {
-                            $exist = true;
-                        }
-                    }
-                }
-                if (!isset($arrAll2[$keyItem])) {
-                    $arrAll2[$keyItem] = [
-                        'value' => 1,
-                        'key' => $keyItem,
-                    ];
-                } else {
-                    $arrAll2[$keyItem]['value']++;
-                }
-                $arrAll2[$keyItem]['exist'] = $exist;
-            }
-            
-        }
-        $arrAll2 = collect($arrAll2)->sortByDesc('value')->toArray();
 
         $day = $request->day ?? Carbon::now()->format('Y-m-d');
         $info = Result::whereMonth('day', Carbon::parse($day)->format('m'))
@@ -183,16 +110,31 @@ class DashboardController extends Controller
             $dataCompare[$key . '(' . $value .')'] = $value;
         }
 
+        $day = $request->day ?? Carbon::now()->format('Y-m-d');
+        $info = Result::whereDate('day', '>=', Carbon::parse($day)->addYears(-1)->format('Y-m-01'))
+            ->whereDate('day', '<', Carbon::parse($day)->addMonths(1)->format('Y-m-01'))->orderBy('day')->get();
+
+        $dataInYear = [];   
+        $totalYear = 0;
+        foreach ($info as $key => $item) {
+            $price = $item->total*$pointInDay*80000 - $pointInDay * 21900*3;
+            if (isset($dataInYear[Carbon::parse($item->day)->format('Y-m')])) {
+                $dataInYear[Carbon::parse($item->day)->format('Y-m')] += $price;
+            } else {
+                $dataInYear[Carbon::parse($item->day)->format('Y-m')] = $price;
+            }
+            $totalYear += $price;
+        }
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
             'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
             'arrAll3' => $arrAll3,
-            'arrAll1' => $arrAll1,
-            'arrAll2' => $arrAll2,
             'backGround' => $backGround,
             'dataInMonthMoney' => $dataCompare,
             'totalInMonth' => $totalInMonth,
+            'dataInYear' => $dataInYear,
+            'totalYear' => $totalYear,
             'prevMonth' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
             'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
         ]);
