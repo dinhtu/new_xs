@@ -38,10 +38,10 @@ $max = 10;
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-12">
                             <canvas id="myChart" height="200"></canvas>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-12">
                             <canvas id="myChart3" height="200"></canvas>
                         </div>
                     </div>
@@ -60,14 +60,23 @@ $max = 10;
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+  var dataYear = {!! json_encode($dataInMonth, JSON_UNESCAPED_UNICODE) !!};
+  var color = {!! json_encode($color, JSON_UNESCAPED_UNICODE) !!};
+  var convertData = [];
+    for (const [key, value] of Object.entries(dataYear)) {
+      var item = {};
+      item.label = key;
+      item.backgroundColor = color[convertData.length];
+      item.borderColor = color[convertData.length];
+        item.data = [];
+      for (const [key1, value1] of Object.entries(value)) {
+        item.data.push(value1);
+      }
+      convertData.push(item);
+    }
 const data = {
-  labels: {!! json_encode(array_keys($dataInMonth), JSON_UNESCAPED_UNICODE) !!},
-  datasets: [{
-    label: 'month',
-    backgroundColor: 'rgb(255, 99, 132)',
-    borderColor: 'rgb(255, 99, 132)',
-    data: JSON.parse('{{ json_encode(array_values($dataInMonth)) }}'),
-  }]
+  labels: {!! json_encode(array_keys($labelXMonth), JSON_UNESCAPED_UNICODE) !!},
+  datasets: convertData
 };
 const config = {
   type: 'line',
@@ -105,7 +114,7 @@ const config2 = {
 };
 
 const data3 = {
-  labels: {!! json_encode(array_keys($dataInMonth), JSON_UNESCAPED_UNICODE) !!},
+  labels: {!! json_encode(array_keys($dataInMonthMoney), JSON_UNESCAPED_UNICODE) !!},
   datasets: [{
     label: 'money',
     backgroundColor: 'blue',
