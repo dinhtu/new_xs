@@ -1,10 +1,16 @@
 @extends('layouts.producer')
 @php
-$max = 10;
+$max = 15;
 @endphp
 <style>
     .tmp tbody tr.btn-success:nth-of-type(odd) {
         background-color: #2eb85c !important;
+    }
+    .btn-exit-old {
+        background-color: #f9b115 !important;
+    }
+    .btn-exit-old-and-day {
+        background-color: #39f !important;
     }
 </style>
 @section('content')
@@ -32,8 +38,18 @@ $max = 10;
                                 continue;
                             }
                             $i++;
+                            $class = '';
+                                if ($item['exist']) {
+                                    $class = 'btn-success';
+                                }
+                                if ($item['existOld']) {
+                                    $class = 'btn-exit-old';
+                                }
+                                if ($item['existOld'] && $item['exist']) {
+                                    $class = 'btn-exit-old-and-day';
+                                }
                             @endphp
-                            <tr class="{{$item['exist'] ? 'btn-success' : ''}}">
+                            <tr class="{{$class}}">
                                 <td>{{sprintf('%02d', $item['key']);}} {{$item['exist'] && $item['count'] != 1 ? '('.$item['count'].')' : ''}}</td>
                                 <td>{{$item['value']}}</td>
                             </tr>

@@ -29,6 +29,8 @@ class DashboardController extends Controller
 
         $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
         $xsDetail = $detail->xsDetails ?? [];
+        $detailOld = XsDay::whereDate('day', Carbon::parse($day)->addDays(-1))->with(['xsDetails'])->first();
+        $xsDetailOld = $detailOld->xsDetails ?? [];
         $arrAll3 = [];
         foreach ($info as $key => $item) {
             $tmp = [];
@@ -41,6 +43,14 @@ class DashboardController extends Controller
                         }
                     }
                 }
+                $existOld = false;
+                if ($xsDetailOld) {
+                    foreach ($xsDetailOld as $tmpDetail) {
+                        if (intval($tmpDetail->item) == $keyItem) {
+                            $existOld = true;
+                        }
+                    }
+                }
                 if (!isset($arrAll3[$keyItem])) {
                     $arrAll3[$keyItem] = [
                         'value' => 1,
@@ -50,6 +60,7 @@ class DashboardController extends Controller
                     $arrAll3[$keyItem]['value']++;
                 }
                 $arrAll3[$keyItem]['exist'] = $exist;
+                $arrAll3[$keyItem]['existOld'] = $existOld;
             }
         }
         foreach ($arrAll3 as $key => $value) {
@@ -70,6 +81,7 @@ class DashboardController extends Controller
             }
         }
         $arrAll3 = collect($arrAll3)->sortByDesc('value')->toArray();
+        // dd($arrAll3);
 
         $day = $request->day ?? Carbon::now()->format('Y-m-d');
         $info = Result::whereMonth('day', Carbon::parse($day)->format('m'))
