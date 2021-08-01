@@ -29,7 +29,7 @@ class ResultController extends Controller
         $color = [];
         foreach ($info as $key => $item) {
             $labelXMonth[Carbon::parse($item->day)->format('d')] = Carbon::parse($item->day)->format('d');
-            $dataInMonth[Carbon::parse($item->day)->format('m')][Carbon::parse($item->day)->format('d')] = $item->total;
+            $dataInMonth[Carbon::parse($item->day)->format('m')][] = $item->total;
             if (Carbon::parse($item->day)->format('m') == Carbon::parse($day)->format('m')) {
                 $dataInMonthMoney[Carbon::parse($item->day)->format('d')] = $item->total*$item->point*80000 - $item->point * 21900*3;
                 $totalInMonth += $item->total*$item->point*80000 - $item->point * 21900*3;
@@ -73,6 +73,7 @@ class ResultController extends Controller
                     break;      
             }
         }
+        // dd($dataInMonth);
 
         $info = Result::whereDate('day', '<=', Carbon::now())
             ->whereDate('day', '>=', Carbon::now()->addDays(-15))->orderBy('day')->get();

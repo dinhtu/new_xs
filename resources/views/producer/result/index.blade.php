@@ -68,10 +68,10 @@ $max = 10;
       item.label = key;
       item.backgroundColor = color[convertData.length];
       item.borderColor = color[convertData.length];
-        item.data = [];
-      for (const [key1, value1] of Object.entries(value)) {
-        item.data.push(value1);
-      }
+        item.data =value;
+      // for (const [key1, value1] of Object.entries(value)) {
+      //   item.data.push(value1);
+      // }
       convertData.push(item);
     }
 const data = {
