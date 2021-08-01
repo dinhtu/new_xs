@@ -23,14 +23,13 @@ class ResultController extends Controller
         $info = Result::whereMonth('day', Carbon::parse($day)->format('m'))
             ->whereYear('day', Carbon::parse($day)->format('Y'))->orderBy('day')->get();
 
-        $pointInDay = 10;
         $dataInMonth = [];
         $dataInMonthMoney = [];
         $totalInMonth = 0;
         foreach ($info as $key => $item) {
             $dataInMonth[Carbon::parse($item->day)->format('d')] = $item->total;
-            $dataInMonthMoney[Carbon::parse($item->day)->format('d')] = $item->total*$pointInDay*80000 - $pointInDay * 21900*3;
-            $totalInMonth += $item->total*$pointInDay*80000 - $pointInDay * 21900*3;
+            $dataInMonthMoney[Carbon::parse($item->day)->format('d')] = $item->total*$item->point*80000 - $item->point * 21900*3;
+            $totalInMonth += $item->total*$item->point*80000 - $item->point * 21900*3;
         }
 
         $info = Result::whereDate('day', '<=', Carbon::now())
@@ -41,8 +40,8 @@ class ResultController extends Controller
         $totalHalfMonth = 0;
         foreach ($info as $key => $item) {
             $dataHalfMonth[Carbon::parse($item->day)->format('d')] = $item->total;
-            $dataHalfMonthMoney[Carbon::parse($item->day)->format('d')] = $item->total*$pointInDay*80000 - $pointInDay * 21900*3;
-            $totalHalfMonth += $item->total*$pointInDay*80000 - $pointInDay * 21900*3;
+            $dataHalfMonthMoney[Carbon::parse($item->day)->format('d')] = $item->total*$item->point*80000 - $item->point * 21900*3;
+            $totalHalfMonth += $item->total*$item->point*80000 - $item->point * 21900*3;
         }
         return view('producer.result.index', [
             'title' => 'ダッシュボード',

@@ -75,17 +75,16 @@ class DashboardController extends Controller
         $info = Result::whereMonth('day', Carbon::parse($day)->format('m'))
             ->whereYear('day', Carbon::parse($day)->format('Y'))->orderBy('day')->get();
 
-        $pointInDay = 10;
         $dataInMonthMoney = [];
         $backGround = [];
         $totalInMonth = 0;
         foreach ($info as $key => $item) {
-            if (isset($dataInMonthMoney[number_format($item->total*$pointInDay*80000 - $pointInDay * 21900*3)])) {
-                $dataInMonthMoney[number_format($item->total*$pointInDay*80000 - $pointInDay * 21900*3)]++;
+            if (isset($dataInMonthMoney[number_format($item->total*$item->point*80000 - $item->point * 21900*3)])) {
+                $dataInMonthMoney[number_format($item->total*$item->point*80000 - $item->point * 21900*3)]++;
             } else {
-                $dataInMonthMoney[number_format($item->total*$pointInDay*80000 - $pointInDay * 21900*3)] = 1;
+                $dataInMonthMoney[number_format($item->total*$item->point*80000 - $item->point * 21900*3)] = 1;
             }
-            $totalInMonth += $item->total*$pointInDay*80000 - $pointInDay * 21900*3;
+            $totalInMonth += $item->total*$item->point*80000 - $item->point * 21900*3;
             $class = 'Gray';
             switch ($item->total) {
                 case 0:
@@ -103,7 +102,7 @@ class DashboardController extends Controller
                 default:
                     $class = 'Red';
             }
-            $backGround[number_format($item->total*$pointInDay*80000 - $pointInDay * 21900*3)] = $class;
+            $backGround[number_format($item->total*$item->point*80000 - $item->point * 21900*3)] = $class;
         }
         $dataCompare = [];
         foreach ($dataInMonthMoney as $key => $value) {
@@ -117,7 +116,7 @@ class DashboardController extends Controller
         $dataInYear = [];   
         $totalYear = 0;
         foreach ($info as $key => $item) {
-            $price = $item->total*$pointInDay*80000 - $pointInDay * 21900*3;
+            $price = $item->total*$item->point*80000 - $item->point * 21900*3;
             if (isset($dataInYear[Carbon::parse($item->day)->format('Y-m')])) {
                 $dataInYear[Carbon::parse($item->day)->format('Y-m')] += $price;
             } else {

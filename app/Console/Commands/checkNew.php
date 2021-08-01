@@ -7,6 +7,7 @@ use App\Models\XsDay;
 use App\Models\XsDetail;
 use App\Models\Predict;
 use App\Models\Result;
+use App\Models\Point;
 use Carbon\Carbon;
 use Log;
 
@@ -50,6 +51,7 @@ class checkNew extends Command
         $two = 0;
         $max = 0;
         $totalMoney = 0;
+        $currentPoint = Point::first()->point ?? 10;
         while (Carbon::parse($startDate) < $now) {
             Log::channel('log_batch')->info('result:'. $startDate);
             $info = Predict::whereDate('day', Carbon::parse($startDate))->where('type', 3)->first();
