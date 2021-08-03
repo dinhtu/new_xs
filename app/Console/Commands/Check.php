@@ -64,11 +64,7 @@ class Check extends Command
                 })
                 ->get();
                 foreach ($dayOld as $dayTmp) {
-                    $dayNext = XsDay::where(function($q) use ($dayTmp) {
-                        for ($i = 1; $i <= 3; $i++) { 
-                            $q->orWhereDate('day', Carbon::parse($dayTmp->xsDay->day)->addDays($i));
-                        }
-                    })
+                    $dayNext = XsDay::whereDate('day', Carbon::parse($dayTmp->xsDay->day)->addDays(1))
                         ->with([
                             'xsDetailNext' => function($q) use ($xsDetail) {
                                 $q->where('number_order', $xsDetail->number_order);
