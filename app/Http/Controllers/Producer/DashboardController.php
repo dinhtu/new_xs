@@ -183,6 +183,10 @@ class DashboardController extends Controller
                 } else {
                     $dataLottery[$key]['count'] += $countExist;
                 }
+            } else {
+                if (!isset($dataLottery[$key]['count'])) {
+                    $dataLottery[$key]['count'] = 0;
+                }
             }
         }
 
