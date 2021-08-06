@@ -23,7 +23,7 @@ Route::get('logout', "LoginController@logout");
 Route::group([
     'prefix' => 'producer',
     'namespace' => 'Producer',
-    // 'middleware' => ['assign.guard:user', 'producer']
+    'middleware' => ['dinhtu']
 ], function () {
     //route producer
     Route::resource('dashboard', DashboardController::class, ['as' => 'producer']);
