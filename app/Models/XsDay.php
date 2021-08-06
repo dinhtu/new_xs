@@ -17,6 +17,10 @@ class XsDay extends Model
     {
         return $this->hasOne('App\Models\XsDetail');
     }
+    public function xsDetailOld()
+    {
+        return $this->hasOne('App\Models\XsDetail');
+    }
     public function predict()
     {
         return $this->hasOne('App\Models\Predict');

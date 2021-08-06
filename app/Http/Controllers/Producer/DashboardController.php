@@ -8,6 +8,7 @@ use App\Models\XsDay;
 use App\Models\XsDetail;
 use App\Models\Predict;
 use App\Models\Result;
+use App\Models\Lottery;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -136,6 +137,57 @@ class DashboardController extends Controller
             }
             $totalYear += $price;
         }
+
+        $day = $request->day ?? Carbon::now()->format('Y-m-d');
+        $info = Lottery::whereDate('day', Carbon::parse($day))->first();
+        if ($info) {
+            $info = json_decode($info->detail, true);
+        } else {
+            $info = [];
+        }
+
+        $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
+        $xsDetail = $detail->xsDetails ?? [];
+        $dataLottery = [];
+        foreach ($info as $key => $item) {
+            $exist = false;
+            if ($xsDetail) {
+                foreach ($xsDetail as $tmpDetail) {
+                    if (intval($tmpDetail->item) == $key) {
+                        $exist = true;
+                    }
+                }
+            }
+            if (!isset($dataLottery[$key])) {
+                $dataLottery[$key] = [
+                    'value' => 1,
+                    'key' => $key,
+                ];
+            } else {
+                $dataLottery[$key]['value']++;
+            }
+            $dataLottery[$key]['exist'] = $exist;
+        }
+        foreach ($dataLottery as $key => $value) {
+            $exist = false;
+            $countExist = 0;
+            foreach ($xsDetail as $tmpDetail) {
+                if (intval($tmpDetail->item) == intval($key)) {
+                    $exist = true;
+                    $countExist++;
+                }
+            }
+            if ($exist) {
+                if (!isset($dataLottery[$key]['count'])) {
+                    $dataLottery[$key]['count'] = $countExist;
+                } else {
+                    $dataLottery[$key]['count'] += $countExist;
+                }
+            }
+        }
+
+        $dataLottery = collect($dataLottery)->sortByDesc('value')->toArray();
+
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
@@ -146,6 +198,7 @@ class DashboardController extends Controller
             'totalInMonth' => $totalInMonth,
             'dataInYear' => $dataInYear,
             'totalYear' => $totalYear,
+            'dataLottery' => $dataLottery,
             'prevMonth' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
             'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
         ]);
