@@ -8,6 +8,7 @@ use App\Models\XsDay;
 use App\Models\XsDetail;
 use App\Models\Predict;
 use App\Models\Result;
+use App\Models\Special;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -136,6 +137,33 @@ class DashboardController extends Controller
             }
             $totalYear += $price;
         }
+        $day = $request->day ?? Carbon::now()->format('Y-m-d');
+        $info = Special::whereDate('day', Carbon::parse($day))->first();
+        if ($info) {
+            $info = json_decode($info->detail, true);
+        } else {
+            $info = [];
+        }
+        $special = [];
+        $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
+        $xsDetail = $detail->xsDetails ?? [];
+        foreach ($info as $key => $value) {
+            $exist = false;
+            if ($xsDetail) {
+                foreach ($xsDetail as $tmpDetail) {
+                    if (intval($tmpDetail->item) == intval($key) && $tmpDetail->number_order == 0) {
+                        $exist = true;
+                    }
+                }
+            }
+            $special[] = [
+                'key' => $key,
+                'value' => $value,
+                'exist' => $exist,
+            ];
+        }
+        $special = collect($special)->sortByDesc('value')->toArray();
+        
         return view('producer.dashboard.index', [
             'title' => 'ダッシュボード',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
@@ -146,6 +174,7 @@ class DashboardController extends Controller
             'totalInMonth' => $totalInMonth,
             'dataInYear' => $dataInYear,
             'totalYear' => $totalYear,
+            'special' => $special,
             'prevMonth' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
             'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
         ]);

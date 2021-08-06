@@ -95,6 +95,42 @@ $max = 15;
                 </div>
             </div>
         </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                <strong>special</strong>
+                </div>
+                <div class="card-body">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev]) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next]) }}"> Next</a>
+                </div>
+                    <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
+                        <tbody>
+                        @php
+                        $i = 1;
+                        @endphp
+                        @foreach ($special as $item)
+                            @php
+                            if($i > 15) {
+                                continue;
+                            }
+                            $i++;
+                            $class = '';
+                                if ($item['exist']) {
+                                    $class = 'btn-success';
+                                }
+                            @endphp
+                            <tr class="{{$class}}">
+                                <td>{{sprintf('%02d', $item['key']);}}</td>
+                                <td>{{$item['value']}}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

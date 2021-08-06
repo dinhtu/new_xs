@@ -21,4 +21,8 @@ class XsDay extends Model
     {
         return $this->hasOne('App\Models\Predict');
     }
+    public function xsDetailSpecial()
+    {
+        return $this->hasOne('App\Models\XsDetail')->where('number_order', 0);
+    }
 }
