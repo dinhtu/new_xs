@@ -7,6 +7,7 @@ use App\Models\XsDay;
 use App\Models\XsDetail;
 use App\Models\Predict;
 use App\Models\Lottery;
+use App\Models\Result;
 use Carbon\Carbon;
 use DB;
 use Log;
