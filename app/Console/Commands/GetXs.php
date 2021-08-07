@@ -58,58 +58,62 @@ class GetXs extends Command
         $url = 'https://xskt.com.vn/xsmb/ngay-';
         while ($startDate <= $now) {
             DB::beginTransaction();
-            Log::channel('log_batch')->info($startDate->format('Y-m-d'));
-            if (XsDay::whereDate('day', $startDate->format('Y-m-d'))->exists()) {
-                $startDate = $startDate->addDays(1);
-                continue;
-            }
-            $xsDay = new XsDay();
-            $xsDay->day = $startDate;
-            if (!$xsDay->save()) {
-                return false;
-            }
+            try {
+                Log::channel('log_batch')->info($startDate->format('Y-m-d'));
+                if (XsDay::whereDate('day', $startDate->format('Y-m-d'))->exists()) {
+                    $startDate = $startDate->addDays(1);
+                    continue;
+                }
+                $xsDay = new XsDay();
+                $xsDay->day = $startDate;
+                if (!$xsDay->save()) {
+                    return false;
+                }
 
-            $crawlerPage = new Crawler;
-            $crawlerPage->addHTMLContent($this->getHtml($url . $startDate->format('d-m-Y')), 'UTF-8');
-            // $crawlerPage->addHTMLContent($this->getHtml($url), 'UTF-8');
-            $table = $crawlerPage->filter('table.result');
+                $crawlerPage = new Crawler;
+                $crawlerPage->addHTMLContent($this->getHtml($url . $startDate->format('d-m-Y')), 'UTF-8');
+                // $crawlerPage->addHTMLContent($this->getHtml($url), 'UTF-8');
+                $table = $crawlerPage->filter('table.result');
 
-            $stt = 0;
-            $existDetail = false;
-            $table->each(function (Crawler $nodeTable) use (&$stt, $xsDay, &$existDetail) {
-                $nodeTable->filter('em')->each(function (Crawler $nodeDev) use (&$stt, $xsDay) {
-                    $xsDetail = new XsDetail();
-                    $xsDetail->xs_day_id = $xsDay->id;
-                    $xsDetail->origin = trim($nodeDev->text());
-                    $xsDetail->item = substr(trim($nodeDev->text()), -2, 2);
-                    $xsDetail->number_order = $stt;
-                    if (!$xsDetail->save()) {
-                        return false;
-                    }
-                    $stt++;
-                });
-                $nodeTable->filter('p')->each(function (Crawler $nodeDev) use (&$stt, $xsDay, &$existDetail) {
-                    $br = explode("<br>", $nodeDev->html());
-                    foreach ($br as $itemBr) {
-                        $space = explode(" ", $itemBr);
-                        foreach ($space as $itemSpace) {
-                            $xsDetail = new XsDetail();
-                            $xsDetail->xs_day_id = $xsDay->id;
-                            $xsDetail->origin = trim($itemSpace);
-                            $xsDetail->item = substr(trim($itemSpace), -2, 2);
-                            $xsDetail->number_order = $stt;
-                            $existDetail = true;
-                            if (!$xsDetail->save()) {
-                                return false;
-                            }
-                            $stt++;
+                $stt = 0;
+                $existDetail = false;
+                $table->each(function (Crawler $nodeTable) use (&$stt, $xsDay, &$existDetail) {
+                    $nodeTable->filter('em')->each(function (Crawler $nodeDev) use (&$stt, $xsDay) {
+                        $xsDetail = new XsDetail();
+                        $xsDetail->xs_day_id = $xsDay->id;
+                        $xsDetail->origin = trim($nodeDev->text());
+                        $xsDetail->item = substr(trim($nodeDev->text()), -2, 2);
+                        $xsDetail->number_order = $stt;
+                        if (!$xsDetail->save()) {
+                            return false;
                         }
-                    }
+                        $stt++;
+                    });
+                    $nodeTable->filter('p')->each(function (Crawler $nodeDev) use (&$stt, $xsDay, &$existDetail) {
+                        $br = explode("<br>", $nodeDev->html());
+                        foreach ($br as $itemBr) {
+                            $space = explode(" ", $itemBr);
+                            foreach ($space as $itemSpace) {
+                                $xsDetail = new XsDetail();
+                                $xsDetail->xs_day_id = $xsDay->id;
+                                $xsDetail->origin = trim($itemSpace);
+                                $xsDetail->item = substr(trim($itemSpace), -2, 2);
+                                $xsDetail->number_order = $stt;
+                                $existDetail = true;
+                                if (!$xsDetail->save()) {
+                                    return false;
+                                }
+                                $stt++;
+                            }
+                        }
+                    });
                 });
-            });
-            if ($existDetail) {
-                DB::commit();
-                Log::channel('log_batch')->info($startDate->format('Y-m-d'). '-complete');
+                if ($existDetail) {
+                    DB::commit();
+                    Log::channel('log_batch')->info($startDate->format('Y-m-d'). '-complete');
+                }
+            } catch (\Throwable $th) {
+                Log::channel('log_batch')->error($startDate->format('Y-m-d'). ' ' .$th->getMessage());
             }
             $startDate = $startDate->addDays(1);
         }
