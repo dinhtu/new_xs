@@ -112,10 +112,7 @@ $max = 15;
                         @endphp
                         @foreach ($dataLottery as $item)
                             @php
-                            if($i > $max) {
-                                continue;
-                            }
-                            $i++;
+                            
                             $class = '';
                                 if ($item['exist']) {
                                     $class = 'btn-success';
