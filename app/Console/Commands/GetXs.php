@@ -71,9 +71,10 @@ class GetXs extends Command
                 }
 
                 $crawlerPage = new Crawler;
-                $crawlerPage->addHTMLContent($this->getHtml($url . $startDate->format('d-m-Y')), 'UTF-8');
+                // $crawlerPage->addHTMLContent($this->getHtml($url . $startDate->format('d-m-Y')), 'UTF-8');
+                $crawlerPage->addHTMLContent($this->getHtml($url . intval($startDate->format('d')) . '-' . intval($startDate->format('m')) . '-' .  $startDate->format('Y')), 'UTF-8');
                 // $crawlerPage->addHTMLContent($this->getHtml($url), 'UTF-8');
-                $table = $crawlerPage->filter('table.result');
+                $table = $crawlerPage->filter('table#MB0');
 
                 $stt = 0;
                 $existDetail = false;
