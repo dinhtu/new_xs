@@ -109,8 +109,8 @@ class GetXs extends Command
             });
             if ($existDetail) {
                 DB::commit();
+                Log::channel('log_batch')->info($startDate->format('Y-m-d'). '-complete');
             }
-            Log::channel('log_batch')->info($startDate->format('Y-m-d'). '-complete');
             $startDate = $startDate->addDays(1);
         }
         Log::channel('log_batch')->info('complete');

@@ -46,7 +46,7 @@ class GetLottery extends Command
     {
         Log::channel('log_batch')->info('start batch file');
         $maxDate = Lottery::max('day');
-        $startDate = empty($maxDate) ? "2021-07-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
+        $startDate = empty($maxDate) ? "2010-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
         //$startDate = "2020-04-02";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         while (Carbon::parse($startDate) < $now) {
