@@ -8,6 +8,7 @@ use App\Models\XsDetail;
 use App\Models\Predict;
 use App\Models\Lottery;
 use App\Models\Result;
+use App\Models\Point;
 use Carbon\Carbon;
 use DB;
 use Log;
