@@ -45,24 +45,24 @@ class LoteryResult extends Command
     public function handle()
     {
         Log::channel('log_batch')->info('start batch file');
-        $maxDate = Lottery::max('day');
+
+        $maxDate = Result::max('day');
         $startDate = empty($maxDate) ? "2021-07-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
-        $startDate = "2021-07-01";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
-        $totalMoney = 0;
+
+        $currentPoint = Point::first()->point ?? 10;
         while (Carbon::parse($startDate) < $now) {
-            Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'));
+            Log::channel('log_batch')->info('result:'. $startDate);
             $info = Lottery::whereDate('day', Carbon::parse($startDate))->first();
             if ($info) {
                 $info = json_decode($info->detail, true);
             } else {
                 $info = [];
             }
-            
             $detail = XsDay::whereDate('day', Carbon::parse($startDate))->with(['xsDetails'])->first();
             $xsDetail = $detail->xsDetails ?? [];
+
             $dataLottery = [];
-            
             foreach ($info as $key => $item) {
                 $exist = false;
                 if ($xsDetail) {
@@ -82,7 +82,6 @@ class LoteryResult extends Command
                 }
                 $dataLottery[$key]['exist'] = $exist;
             }
-            // dd($dataLottery);
             foreach ($dataLottery as $key => $value) {
                 $exist = false;
                 $countExist = 0;
@@ -116,10 +115,15 @@ class LoteryResult extends Command
                 }
                 $i++;
             }
-            $totalMoney += $countPoint*80000*10 - 30*21900;
+            if ($info) {
+                $result = new Result();
+                $result->day = Carbon::parse($startDate);
+                $result->total = $countPoint;
+                $result->save();
+                Log::channel('log_batch')->info('save_result_complete_'.Carbon::parse($startDate)->format('Y-m-d'));
+            }
             $startDate =  Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
-            Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'). '   '. ($countPoint*80000*10 - 30*21900));
         }
-        dd($totalMoney);
+        Log::channel('log_batch')->info('result complete');
     }
 }
