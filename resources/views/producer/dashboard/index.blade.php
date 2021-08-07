@@ -17,10 +17,10 @@ $max = 15;
 
 <div class="fade-in">
     <div class="row">
-        <div class="col-sm-7">
+    <div class="col-sm-7">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán 3</strong>
+                <strong>Dự đoán new</strong>
                 </div>
                 <div class="card-body">
                 <div class="card-footer">
@@ -32,21 +32,12 @@ $max = 15;
                         @php
                         $i = 1;
                         @endphp
-                        @foreach ($arrAll3 as $item)
+                        @foreach ($dataLottery as $item)
                             @php
-                            if($i > $max) {
-                                continue;
-                            }
-                            $i++;
+                            
                             $class = '';
                                 if ($item['exist']) {
                                     $class = 'btn-success';
-                                }
-                                if ($item['existOld']) {
-                                    $class = 'btn-exit-old';
-                                }
-                                if ($item['existOld'] && $item['exist']) {
-                                    $class = 'btn-exit-old-and-day';
                                 }
                             @endphp
                             <tr class="{{$class}}">
@@ -98,7 +89,7 @@ $max = 15;
         <div class="col-sm-7">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán new</strong>
+                <strong>Dự đoán 3</strong>
                 </div>
                 <div class="card-body">
                 <div class="card-footer">
@@ -110,12 +101,21 @@ $max = 15;
                         @php
                         $i = 1;
                         @endphp
-                        @foreach ($dataLottery as $item)
+                        @foreach ($arrAll3 as $item)
                             @php
-                            
+                            if($i > $max) {
+                                continue;
+                            }
+                            $i++;
                             $class = '';
                                 if ($item['exist']) {
                                     $class = 'btn-success';
+                                }
+                                if ($item['existOld']) {
+                                    $class = 'btn-exit-old';
+                                }
+                                if ($item['existOld'] && $item['exist']) {
+                                    $class = 'btn-exit-old-and-day';
                                 }
                             @endphp
                             <tr class="{{$class}}">
@@ -128,6 +128,7 @@ $max = 15;
                 </div>
             </div>
         </div>
+        
     </div>
 </div>
 @endsection
