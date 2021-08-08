@@ -53,7 +53,8 @@ class GetLottery extends Command
             Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'));
             $day = XsDay::whereDate('day', Carbon::parse($startDate)->addDays(-1))->with(['xsDetails'])->first();
             $dataAll = [];
-            foreach ($day->xsDetails as $xsDetail) {
+            $xsDetails = $day->xsDetails ?? [];
+            foreach ($xsDetails as $xsDetail) {
                 $dayOld1 = XsDetail::where([
                     'number_order' => $xsDetail->number_order,
                 ])

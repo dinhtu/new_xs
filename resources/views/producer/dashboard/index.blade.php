@@ -1,6 +1,7 @@
 @extends('layouts.producer')
 @php
 $max = 15;
+use Carbon\Carbon;
 @endphp
 <style>
     .tmp tbody tr.btn-success:nth-of-type(odd) {
@@ -20,7 +21,7 @@ $max = 15;
     <div class="col-sm-7">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán new</strong>
+                <strong>Dự đoán new ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
                 </div>
                 <div class="card-body">
                 <div class="card-footer">
@@ -53,7 +54,7 @@ $max = 15;
         <div class="col-sm-5">
             <div class="card">
                 <div class="card-header">
-                <strong>Ratio. Total : {{number_format($totalInMonth)}}</strong>
+                <strong>Ratio. Total : {{number_format($totalInMonth)}} ({{Carbon::parse($next)->addDays(-1)->format('Y-m')}})</strong>
                 </div>
                 <div class="card-body">
                 <div class="card-footer">
@@ -71,7 +72,7 @@ $max = 15;
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                <strong>Year. Total : {{number_format($totalYear)}}</strong>
+                <strong>Year. Total : {{number_format($totalYear)}} ({{Carbon::parse($next)->addDays(-1)->format('Y')}})</strong>
                 </div>
                 <div class="card-body">
                 <div class="card-footer">

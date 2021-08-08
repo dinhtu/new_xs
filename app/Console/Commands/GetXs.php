@@ -52,29 +52,25 @@ class GetXs extends Command
         ini_set('memory_limit', '512M');
         Log::channel('log_batch')->info('start batch file');
         $maxDate = XsDay::max('day');
-        $startDate = empty($maxDate) ? Carbon::parse("01-01-2007") : Carbon::parse($maxDate)->addDays(1);
+        $startDate = empty($maxDate) ? "2007-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
+        // $startDate = '2007-02-18';
         $now = Carbon::parse(Carbon::now()->format('Y-m-d'));
         // $url = 'https://ketqua.net/xo-so.php?ngay=';
         $url = 'https://xskt.com.vn/xsmb/ngay-';
-        while ($startDate <= $now) {
+        while (Carbon::parse($startDate) <= $now) {
             DB::beginTransaction();
             try {
-                Log::channel('log_batch')->info($startDate->format('Y-m-d'));
-                if (XsDay::whereDate('day', $startDate->format('Y-m-d'))->exists()) {
-                    $startDate = $startDate->addDays(1);
-                    continue;
-                }
+                Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'));
                 $xsDay = new XsDay();
-                $xsDay->day = $startDate;
+                $xsDay->day = Carbon::parse($startDate);
                 if (!$xsDay->save()) {
                     return false;
                 }
 
                 $crawlerPage = new Crawler;
-                // $crawlerPage->addHTMLContent($this->getHtml($url . $startDate->format('d-m-Y')), 'UTF-8');
-                $crawlerPage->addHTMLContent($this->getHtml($url . intval($startDate->format('d')) . '-' . intval($startDate->format('m')) . '-' .  $startDate->format('Y')), 'UTF-8');
-                // $crawlerPage->addHTMLContent($this->getHtml($url), 'UTF-8');
-                $table = $crawlerPage->filter('table#MB0');
+                $tmp = Carbon::parse($startDate);
+                $crawlerPage->addHTMLContent($this->getHtml($url . intval($tmp->format('d')) . '-' . intval($tmp->format('m')) . '-' .  $tmp->format('Y')), 'UTF-8');
+                $table = $crawlerPage->filter('table.result');
 
                 $stt = 0;
                 $existDetail = false;
@@ -111,12 +107,13 @@ class GetXs extends Command
                 });
                 if ($existDetail) {
                     DB::commit();
-                    Log::channel('log_batch')->info($startDate->format('Y-m-d'). '-complete');
+                    Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'). ' complete');
+                } else {
+                    DB::rollback();
                 }
             } catch (\Throwable $th) {
-                Log::channel('log_batch')->error($startDate->format('Y-m-d'). ' ' .$th->getMessage());
             }
-            $startDate = $startDate->addDays(1);
+            $startDate =  Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
         }
         Log::channel('log_batch')->info('complete');
     }
