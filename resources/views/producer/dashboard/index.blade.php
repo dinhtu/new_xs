@@ -76,8 +76,8 @@ use Carbon\Carbon;
                 </div>
                 <div class="card-body">
                 <div class="card-footer">
-                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prevMonth]) }}"> Prev</a>
-                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $nextMonth]) }}"> Next</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prevYear]) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $nextYear]) }}"> Next</a>
                 </div>
                     <div class="row">
                         <div class="col-sm-12">

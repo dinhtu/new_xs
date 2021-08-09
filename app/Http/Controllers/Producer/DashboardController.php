@@ -205,6 +205,8 @@ class DashboardController extends Controller
             'dataLottery' => $dataLottery,
             'prevMonth' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
             'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
+            'prevYear' => Carbon::parse($day)->addYears(-1)->format('Y'),
+            'nextYear' => Carbon::parse($day)->addYears(1)->format('Y'),
         ]);
     }
 

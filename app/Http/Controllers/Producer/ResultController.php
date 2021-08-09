@@ -20,7 +20,13 @@ class ResultController extends Controller
     public function index(Request $request)
     {
         $day = $request->day ?? Carbon::now()->format('Y-m-d');
-        $info = Result::whereYear('day', Carbon::parse($day)->format('Y'))->orderBy('day')->get();
+        $info = Result::whereYear('day', Carbon::parse($day)->format('Y'))
+        ->where(function($q) use ($day) {
+            $q->orWhereMonth('day', Carbon::parse($day)->format('m'));
+            $q->orWhereMonth('day', Carbon::parse($day)->addMonths(-1)->format('m'));
+            $q->orWhereMonth('day', Carbon::parse($day)->addMonths(-2)->format('m'));
+        })
+        ->orderBy('day')->get();
 
         $dataInMonth = [];
         $dataInMonthMoney = [];
@@ -36,13 +42,13 @@ class ResultController extends Controller
             }
             switch (Carbon::parse($item->day)->format('d')) {
                 case '01':
-                    $color[] = 'Black';
-                    break;
-                case '02':
                     $color[] = 'Red';
                     break;
+                case '02':
+                    $color[] = 'Green';
+                    break;
                 case '03':
-                    $color[] = 'Lime';
+                    $color[] = 'Blue';
                     break;
                 case '04':
                     $color[] = 'Blue';
