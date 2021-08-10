@@ -18,6 +18,9 @@ class LoginController extends BaseController
      */
     public function index()
     {
+        if (Auth::check()) {
+            return redirect(route('producer.dashboard.index'));
+        }
         return view('login.index', [
             'title' => 'ログイン',
         ]);
