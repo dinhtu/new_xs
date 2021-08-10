@@ -21,7 +21,7 @@ use Carbon\Carbon;
     <div class="col-sm-7">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán 3</strong>
+                <strong>Dự đoán ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
                 </div>
                 <div class="card-body">
                 <div class="card-footer">
@@ -79,24 +79,6 @@ use Carbon\Carbon;
                 </div>
             </div>
         </div>
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                <strong>Year. Total : {{number_format($totalYear)}} ({{Carbon::parse($next)->addDays(-1)->format('Y')}})</strong>
-                </div>
-                <div class="card-body">
-                <div class="card-footer">
-                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prevYear]) }}"> Prev</a>
-                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $nextYear]) }}"> Next</a>
-                </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <canvas id="myChart1"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="col-sm-7">
             <div class="card">
                 <div class="card-header">
@@ -130,6 +112,25 @@ use Carbon\Carbon;
                 </div>
             </div>
         </div>
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                <strong>Year. Total : {{number_format($totalYear)}} ({{Carbon::parse($next)->addDays(-1)->format('Y')}})</strong>
+                </div>
+                <div class="card-body">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prevYear]) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $nextYear]) }}"> Next</a>
+                </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <canvas id="myChart1"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         
     </div>
 </div>
