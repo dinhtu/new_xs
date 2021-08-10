@@ -93,7 +93,7 @@ class ResultController extends Controller
             $totalHalfMonth += $item->total*$item->point*80000 - $item->point * 21900*3;
         }
         return view('producer.result.index', [
-            'title' => 'ダッシュボード',
+            'title' => 'Good luck',
             'prev' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
             'next' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
             'dataInMonth' => $dataInMonth,

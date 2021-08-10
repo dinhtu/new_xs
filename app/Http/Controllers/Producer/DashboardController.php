@@ -193,7 +193,7 @@ class DashboardController extends Controller
         $dataLottery = collect($dataLottery)->sortByDesc('value')->toArray();
 
         return view('producer.dashboard.index', [
-            'title' => 'ダッシュボード',
+            'title' => 'Good luck',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
             'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
             'arrAll3' => $arrAll3,

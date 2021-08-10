@@ -15,7 +15,7 @@ class DashboardController extends Controller
     public function index()
     {
         return view('wholeSalers.dashboard.index', [
-            'title' => 'ダッシュボード'
+            'title' => 'Good luck'
         ]);
     }
 
