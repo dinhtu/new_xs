@@ -21,7 +21,7 @@ use Carbon\Carbon;
     <div class="col-sm-7">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán new ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
+                <strong>Dự đoán 3</strong>
                 </div>
                 <div class="card-body">
                 <div class="card-footer">
@@ -33,12 +33,21 @@ use Carbon\Carbon;
                         @php
                         $i = 1;
                         @endphp
-                        @foreach ($dataLottery as $item)
+                        @foreach ($arrAll3 as $item)
                             @php
-                            
+                            if($i > $max) {
+                                continue;
+                            }
+                            $i++;
                             $class = '';
                                 if ($item['exist']) {
                                     $class = 'btn-success';
+                                }
+                                if ($item['existOld']) {
+                                    $class = 'btn-exit-old';
+                                }
+                                if ($item['existOld'] && $item['exist']) {
+                                    $class = 'btn-exit-old-and-day';
                                 }
                             @endphp
                             <tr class="{{$class}}">
@@ -51,6 +60,7 @@ use Carbon\Carbon;
                 </div>
             </div>
         </div>
+    
         <div class="col-sm-5">
             <div class="card">
                 <div class="card-header">
@@ -90,7 +100,7 @@ use Carbon\Carbon;
         <div class="col-sm-7">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán 3</strong>
+                <strong>Dự đoán new ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
                 </div>
                 <div class="card-body">
                 <div class="card-footer">
@@ -102,21 +112,12 @@ use Carbon\Carbon;
                         @php
                         $i = 1;
                         @endphp
-                        @foreach ($arrAll3 as $item)
+                        @foreach ($dataLottery as $item)
                             @php
-                            if($i > $max) {
-                                continue;
-                            }
-                            $i++;
+                            
                             $class = '';
                                 if ($item['exist']) {
                                     $class = 'btn-success';
-                                }
-                                if ($item['existOld']) {
-                                    $class = 'btn-exit-old';
-                                }
-                                if ($item['existOld'] && $item['exist']) {
-                                    $class = 'btn-exit-old-and-day';
                                 }
                             @endphp
                             <tr class="{{$class}}">

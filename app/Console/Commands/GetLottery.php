@@ -54,6 +54,7 @@ class GetLottery extends Command
             $day = XsDay::whereDate('day', Carbon::parse($startDate)->addDays(-1))->with(['xsDetails'])->first();
             $dataAll = [];
             $xsDetails = $day->xsDetails ?? [];
+            
             foreach ($xsDetails as $xsDetail) {
                 $dayOld1 = XsDetail::where([
                     'number_order' => $xsDetail->number_order,
@@ -73,21 +74,22 @@ class GetLottery extends Command
                 ])
                 ->with(['xsDay'])
                 ->whereHas('xsDay', function($q) use ($startDate) {
-                    $q->whereDate('day', '<', Carbon::parse($startDate));
+                    $q->whereDate('day', '<', Carbon::parse($startDate)->addDays(-1));
                 })
                 ->get();
                 foreach ($dayOldOld as $dayTmp) {
+                    $dateFormat = Carbon::parse($dayTmp->xsDay->day)->format('Y-m-d');
                     $dayOldOld1 = XsDetail::where([
                         'number_order' => $xsDetail->number_order,
                         'item' => $dayOld1->item
                     ])
                     ->with(['xsDay'])
-                    ->whereHas('xsDay', function($q) use ($dayTmp) {
-                        $q->whereDate('day', Carbon::parse($dayTmp->xsDay->day)->addDays(-1));
+                    ->whereHas('xsDay', function($q) use ($dateFormat) {
+                        $q->whereDate('day', Carbon::parse($dateFormat)->addDays(-1));
                     })
                     ->exists();
                     if ($dayOldOld1) {
-                        $dayNext = XsDay::whereDate('day', Carbon::parse($dayTmp->xsDay->day)->addDays(1))
+                        $dayNext = XsDay::whereDate('day', Carbon::parse($dateFormat)->addDays(1))
                             ->with([
                                 'xsDetailNext' => function($q) use ($xsDetail) {
                                     $q->where('number_order', $xsDetail->number_order);
