@@ -20,7 +20,7 @@ class ResultController extends Controller
     public function index(Request $request)
     {
         $day = $request->day ?? Carbon::now()->format('Y-m-d');
-        $info = Result::whereYear('day', Carbon::parse($day)->format('Y'))
+        $info = Result::whereYear('day', Carbon::parse($day)->format('Y'))->where('type', 5)
         ->where(function($q) use ($day) {
             $q->orWhereMonth('day', Carbon::parse($day)->format('m'));
             $q->orWhereMonth('day', Carbon::parse($day)->addMonths(-1)->format('m'));
@@ -81,7 +81,7 @@ class ResultController extends Controller
         }
         // dd($dataInMonth);
 
-        $info = Result::whereDate('day', '<=', Carbon::now())
+        $info = Result::whereDate('day', '<=', Carbon::now())->where('type', 5)
             ->whereDate('day', '>=', Carbon::now()->addDays(-15))->orderBy('day')->get();
 
         $dataHalfMonth = [];

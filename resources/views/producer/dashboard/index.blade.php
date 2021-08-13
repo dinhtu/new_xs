@@ -1,6 +1,6 @@
 @extends('layouts.producer')
 @php
-$max = 15;
+$max = 10;
 use Carbon\Carbon;
 @endphp
 <style>
@@ -18,7 +18,7 @@ use Carbon\Carbon;
 
 <div class="fade-in">
     <div class="row">
-    <div class="col-sm-7">
+    <div class="col-sm-8">
             <div class="card">
                 <div class="card-header">
                 <strong>Dự đoán ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
@@ -61,7 +61,7 @@ use Carbon\Carbon;
             </div>
         </div>
     
-        <div class="col-sm-5">
+        <div class="col-sm-4">
             <div class="card">
                 <div class="card-header">
                 <strong>Ratio. Total : {{number_format($totalInMonth)}} ({{Carbon::parse($next)->addDays(-1)->format('Y-m')}})</strong>
@@ -79,10 +79,10 @@ use Carbon\Carbon;
                 </div>
             </div>
         </div>
-        <div class="col-sm-7">
+        <div class="col-sm-8">
             <div class="card">
                 <div class="card-header">
-                <strong>Dự đoán new ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
+                <strong>Dự đoán 5 year({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
                 </div>
                 <div class="card-body">
                 <div class="card-footer">
@@ -94,12 +94,21 @@ use Carbon\Carbon;
                         @php
                         $i = 1;
                         @endphp
-                        @foreach ($dataLottery as $item)
+                        @foreach ($arrAll5 as $item)
                             @php
-                            
+                            if($i > $max) {
+                                continue;
+                            }
+                            $i++;
                             $class = '';
                                 if ($item['exist']) {
                                     $class = 'btn-success';
+                                }
+                                if ($item['existOld']) {
+                                    $class = 'btn-exit-old';
+                                }
+                                if ($item['existOld'] && $item['exist']) {
+                                    $class = 'btn-exit-old-and-day';
                                 }
                             @endphp
                             <tr class="{{$class}}">
@@ -109,6 +118,24 @@ use Carbon\Carbon;
                         @endforeach
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-header">
+                <strong>Ratio. Total : {{number_format($totalInMonth5)}} ({{Carbon::parse($next)->addDays(-1)->format('Y-m')}})</strong>
+                </div>
+                <div class="card-body">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prevMonth]) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $nextMonth]) }}"> Next</a>
+                </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <canvas id="myChart2"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -169,6 +196,20 @@ const config1 = {
   options: {}
 };
 
+const data2 = {
+  labels: {!! json_encode(array_keys($dataInMonthMoney5), JSON_UNESCAPED_UNICODE) !!},
+  datasets: [{
+    label: 'month',
+    data: JSON.parse('{{ json_encode(array_values($dataInMonthMoney5)) }}'),
+    backgroundColor: {!! json_encode(array_values($backGround5), JSON_UNESCAPED_UNICODE) !!},
+  }]
+};
+const config2 = {
+  type: 'pie',
+  data: data2,
+  options: {}
+};
+
 $(function() {
     var myChart = new Chart(
     document.getElementById('myChart'),
@@ -178,7 +219,10 @@ $(function() {
     document.getElementById('myChart1'),
     config1
   );
- 
+  var myChart2 = new Chart(
+    document.getElementById('myChart2'),
+    config2
+  );
 });
 </script>
 @endsection
