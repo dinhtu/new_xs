@@ -46,7 +46,7 @@ class Check5Year extends Command
         Log::channel('log_batch')->info('start batch file');
         $maxDate = Predict::where('type', 5)->max('day');
         $startDate = empty($maxDate) ? "2010-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
-        // $startDate = "2021-07-01";
+        // $startDate = "2010-01-01";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         while (Carbon::parse($startDate) < $now) {
             Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d').'type-5');
@@ -61,7 +61,7 @@ class Check5Year extends Command
                 ->with(['xsDay'])
                 ->whereHas('xsDay', function($q) use ($startDate) {
                     $q->whereDate('day', '<', Carbon::parse($startDate));
-                    $q->whereDate('day', '>=', Carbon::now()->addYears(-5));
+                    $q->whereDate('day', '>=', Carbon::parse($startDate)->addYears(-5));
                 })
                 ->get();
                 foreach ($dayOld as $dayTmp) {
