@@ -46,7 +46,7 @@ class Result5Year extends Command
     {
         $maxDate = Result::where('type', 5)->max('day');
         $startDate = empty($maxDate) ? "2010-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
-        $startDate = "2021-07-01";
+        //$startDate = "2010-01-01";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         $currentPoint = Point::first()->point ?? 10;
         while (Carbon::parse($startDate) < $now) {
@@ -55,7 +55,8 @@ class Result5Year extends Command
             if ($info) {
                 $info = json_decode($info->detail, true);
             } else {
-                $info = [];
+                $startDate = Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
+                continue;
             }
             
             $detail = XsDay::whereDate('day', Carbon::parse($startDate))->with(['xsDetails'])->first();
