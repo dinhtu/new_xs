@@ -59,7 +59,8 @@ class checkNew extends Command
             if ($info) {
                 $info = json_decode($info->detail, true);
             } else {
-                $info = [];
+                $startDate = Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
+                continue;
             }
             
             $detail = XsDay::whereDate('day', Carbon::parse($startDate))->with(['xsDetails'])->first();
@@ -98,7 +99,7 @@ class checkNew extends Command
                             'key' => $keyItem,
                         ];
                     } else {
-                        $arrAll[$keyItem]['value']++;
+                        $arrAll[$keyItem]['value'] += $value;
                     }
                     $arrAll[$keyItem]['exist'] = $exist;
                     $tmp[] = [
