@@ -48,12 +48,12 @@ class Check5Year extends Command
         $startDate = empty($maxDate) ? "2010-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
         // $startDate = "2021-07-01";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
-        
         while (Carbon::parse($startDate) < $now) {
             Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d').'type-5');
             $day = XsDay::whereDate('day', Carbon::parse($startDate)->addDays(-1))->with(['xsDetails'])->first();
+            $xsDetails = $day->xsDetails ?? [];
             $dataAll = [];
-            foreach ($day->xsDetails as $xsDetail) {
+            foreach ($xsDetails as $xsDetail) {
                 $dayOld = XsDetail::where([
                     'item' => $xsDetail->item,
                     'number_order' => $xsDetail->number_order,
