@@ -21,87 +21,246 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $day = $request->day ?? Carbon::now()->format('Y-m-d');
-        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 3)->first();
+        $detail = XsDay::whereDate('day', Carbon::parse($day))
+            ->with(['xsDetails'])
+            ->first();
+        $xsDetail = $detail->xsDetails ?? [];
+        $arr = [];
+        foreach ($xsDetail as $key => $value) {
+            if (isset($arr[$value->item])) {
+                $arr[$value->item] ++;
+            } else {
+                $arr[$value->item] = 1;
+            }
+        }
+        
+        $xsDays = XsDay::whereDate('day', '<=', Carbon::parse($day)->addDays(3))
+            ->whereDate('day', '>=', Carbon::parse($day)->addDays(-99))
+            ->orderBy('day', 'DESC')
+            ->with(['xsDetails'])
+            ->get();
+        $dataConvert = [];
+        $dataTotal = [];
+        foreach ($xsDays as $key => $xsDay) {
+            foreach ($xsDay->xsDetails as $detail) {
+                if (isset($dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item])) {
+                    $dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item]['value'] ++;
+                } else {
+                    $dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item]['value'] = 1;
+                }
+                if (isset($dataTotal[$detail->item]['value'])) {
+                    $dataTotal[$detail->item]['value']++;
+                } else {
+                    $dataTotal[$detail->item]['value'] = 1;
+                    $dataTotal[$detail->item]['key'] = $detail->item;
+                }
+                if ($detail->number_order == 0) {
+                    $dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item]['special'] = 1;
+                }
+            }
+        }
+        // $dataTotal = collect($dataTotal)->sortByDesc('value');
+        $dataTotal = collect($dataTotal)->sortBy('key');
+        // $dataTotal = $dataTotal->slice(0, 30);
+        // dd($dataTotal->toArray());
+        
+        return view('producer.dashboard.index', [
+            'title' => 'Good luck',
+            'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
+            'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
+            'dataAll' => $this->GetData($request, 68),
+            'currentDate' =>  Carbon::parse($day)->format('Y/m/d'),
+            // 'dataAll' => $this->GetData($request, 1),
+            // 'data5Year' => $this->GetData($request, 2),
+            // 'data3Year' => $this->GetData($request, 3),
+            // 'data1Year' => $this->GetData($request, 4),
+            'data6Month' => $this->GetData($request, 5),
+            // 'dataOld' => $this->GetData($request, 6),
+            'prevMonth' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
+            'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
+            'arr' => $arr,
+            'dataConvert' => $dataConvert,
+            'dataTotal' => $dataTotal,
+            'dualResult' => $this->getDual($day),
+            'dualResultOld1' => $this->getDual(Carbon::parse($day)->addDays(-1)->format('Y-m-d')),
+            'dualResultOld2' => $this->getDual(Carbon::parse($day)->addDays(-2)->format('Y-m-d')),
+
+            // 'arrAll3' => $arrAll3,
+            // 'arrAll5' => $arrAll5,
+            // 'backGround' => $backGround,
+            // 'dataInMonthMoney' => $dataCompare,
+            // 'totalInMonth' => $totalInMonth,
+            // 'dataInYear' => $dataInYear,
+            // 'totalYear' => $totalYear,
+            // // 'dataLottery' => $dataLottery,
+            // 'prevYear' => Carbon::parse($day)->addYears(-1)->format('Y-m'),
+            // 'nextYear' => Carbon::parse($day)->addYears(1)->format('Y-m'),
+            // 'dataCompare5' => $dataCompare5,
+            // 'backGround' => $backGround,
+            // 'dataInMonthMoney' => $dataCompare5,
+            // 'totalInMonth' => $totalInMonth,
+        ]);
+    }
+    public function getDual($day) {
+        $dualData = [];
+        for ($i=0; $i <= 9; $i++) { 
+            $dualData[$i.$i] = $i.$i;
+        }
+        $dualResult = [];
+        //giai 7
+        $detail = XsDay::whereDate('day', Carbon::parse($day)->addDays(-1))
+            ->with([
+                'xsDetails' => function($q) {
+                    $q->whereIn('number_order', [23, 24, 25, 26]);
+                }
+            ])
+            ->first();
+        $xsDetail = $detail->xsDetails ?? [];
+        $dataSlip = [];
+        foreach ($xsDetail as $value) {
+            $dataSlip[] = [
+                substr(trim($value->item), 0, 1),
+                substr(trim($value->item), 1, 1),
+            ];
+        }
+        for ($i=0; $i < count($dataSlip); $i++) {
+            $first = $dataSlip[$i][0];
+            $flag = false;
+            for ($j=0; $j < count($dataSlip); $j++) { 
+                if ($i == $j) {
+                    continue;
+                }
+                if ($first == $dataSlip[$j][1]) {
+                    $flag = true;
+                }
+            }
+            if ($flag) {
+                $dualResult[$first.$first.'_solution'] = [
+                    'key' => $first.$first,
+                    'label' => 'solution 7'
+                ];
+            }
+        }
+        //mute
+        $detail = XsDay::whereDate('day', Carbon::parse($day)->addDays(-4))
+            ->with([
+                'xsDetails'
+            ])
+            ->first();
+        // dd($detail->toArray());
+        $xsDetails = $detail->xsDetails ?? [];
+        $arrMute = [];
+        for ($i=0; $i <= 9; $i++) {
+            $flagFirst = false;
+            $flagEnd = false;
+            foreach ($xsDetails as $xsDetail) {
+                if (substr(trim($xsDetail->item), 0, 1) == $i) {
+                    $flagFirst = true;
+                }
+                if (substr(trim($xsDetail->item), 1, 1) == $i) {
+                    $flagEnd = true;
+                }
+            }
+            if (!$flagEnd) {
+                $arrMute[$i.$i] =  [
+                    'key' => $i.$i,
+                    'label' => 'mute last'
+                ];
+            }
+            if (!$flagFirst) {
+                $arrMute[$i.$i] = [
+                    'key' => $i.$i,
+                    'label' => 'mute first'
+                ];
+            }
+        }
+        // dd($arrMute);
+        foreach ($arrMute as $item) {
+            $exists = XsDay::where(function($q) use ($day) {
+                $q->orWhereDate('day', Carbon::parse($day)->addDays(-3));
+                $q->orWhereDate('day', Carbon::parse($day)->addDays(-2));
+                $q->orWhereDate('day', Carbon::parse($day)->addDays(-1));
+            })
+                ->whereHas('xsDetails', function($q) use ($item) {
+                    $q->where('item', $item['key']);
+                })
+                ->exists();
+            if ($exists) {
+                $dualResult[$item['key'].'_'.$item['label']] =  [
+                    'key' => $item['key'],
+                    'label' => $item['label']
+                ];
+            }
+        }
+
+
+        // $dataTogether = [
+        //     '787' => 84,
+        //     '484' => 64,
+        //     '363' => 83,
+        //     '010' => 60,
+        //     '898' => 60,
+        //     '242' => 72,
+        // ];
+        // $detail = XsDay::whereDate('day', Carbon::parse($day)->addDays(-1))
+        //     ->with([
+        //         'xsDetails'
+        //     ])
+        //     ->first();
+        // $xsDetails = $detail->xsDetails ?? [];
+        // foreach ($xsDetails as $xsDetail) {
+        //     // dd($xsDetail->origin);
+        //     if (strlen(trim($xsDetail->origin)) < 3) {
+        //         continue;
+        //     }
+        //     $tmp = substr(trim($xsDetail->origin), strlen(trim($xsDetail->origin)) - 3, 3);
+        //     if (isset($dataTogether[$tmp])) {
+        //         $dualResult[$dataTogether[$tmp]] =  [
+        //             'key' => $dataTogether[$tmp],
+        //             'label' => 'together'
+        //         ];
+        //     }
+        // }
+
+
+        $xsDays = XsDay::where(function($q) use ($day) {
+            $q->orWhereDate('day', Carbon::parse($day));
+            $q->orWhereDate('day', Carbon::parse($day)->addDays(1));
+            $q->orWhereDate('day', Carbon::parse($day)->addDays(2));
+        })
+            ->with(['xsDetails'])
+            ->get();
+        $xsDetail = $detail->xsDetails ?? [];
+        foreach ($xsDays as $xsDay) {
+            foreach ($xsDay->xsDetails as $xsDetail) {
+                foreach ($dualResult as &$value) {
+                    if ($xsDetail->item == $value['key']) {
+                        $value['exist'] = 1;
+                    }
+                }
+            }
+        }
+        return $dualResult;
+    }
+    public function GetData($request, $type) {
+        $day = $request->day ?? Carbon::now()->format('Y-m-d');
+        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', $type)->first();
         if ($info) {
             $info = json_decode($info->detail, true);
         } else {
             $info = [];
         }
-
         $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
         $xsDetail = $detail->xsDetails ?? [];
         $detailOld = XsDay::whereDate('day', Carbon::parse($day)->addDays(-1))->with(['xsDetails'])->first();
         $xsDetailOld = $detailOld->xsDetails ?? [];
-        $arrAll3 = [];
-        foreach ($info as $key => $item) {
-            $tmp = [];
-            foreach ($item as $keyItem => $value) {
-                $exist = false;
-                if ($xsDetail) {
-                    foreach ($xsDetail as $tmpDetail) {
-                        if (intval($tmpDetail->item) == $keyItem) {
-                            $exist = true;
-                        }
-                    }
-                }
-                $existOld = false;
-                if ($xsDetailOld) {
-                    foreach ($xsDetailOld as $tmpDetail) {
-                        if (intval($tmpDetail->item) == $keyItem) {
-                            $existOld = true;
-                        }
-                    }
-                }
-                if (!isset($arrAll3[$keyItem])) {
-                    $arrAll3[$keyItem] = [
-                        'value' => $value,
-                        'key' => $keyItem,
-                    ];
-                } else {
-                    $arrAll3[$keyItem]['value'] += $value;
-                }
-                $arrAll3[$keyItem]['exist'] = $exist;
-                $arrAll3[$keyItem]['existOld'] = $existOld;
-            }
-        }
-        foreach ($arrAll3 as $key => $value) {
-            $exist = false;
-            $countExist = 0;
-            foreach ($xsDetail as $tmpDetail) {
-                if (intval($tmpDetail->item) == intval($value['key'])) {
-                    $exist = true;
-                    $countExist++;
-                }
-            }
-            if ($exist) {
-                if (!isset($arrAll3[$key]['count'])) {
-                    $arrAll3[$key]['count'] = $countExist;
-                } else {
-                    $arrAll3[$key]['count'] += $countExist;
-                }
-            }
-        }
-        $arrAll3 = collect($arrAll3)->sortByDesc('value')->toArray();
-
-        //5 year
-        $info = Predict::whereDate('day', Carbon::parse($day))->where('type', 5)->first();
-        if ($info) {
-            $info = json_decode($info->detail, true);
-        } else {
-            $info = [];
-        }
-
-        $detail = XsDay::whereDate('day', Carbon::parse($day))->with(['xsDetails'])->first();
-        $xsDetail = $detail->xsDetails ?? [];
-        $detailOld = XsDay::whereDate('day', Carbon::parse($day)->addDays(-1))->with(['xsDetails'])->first();
-        $xsDetailOld = $detailOld->xsDetails ?? [];
-        $arrAll5 = [];
+        $dataAll = [];
         foreach ($info as $keyItem => $value) {
             $tmp = [];
             $exist = false;
             if ($xsDetail) {
                 foreach ($xsDetail as $tmpDetail) {
-                    if (intval($tmpDetail->item) == $keyItem) {
+                    if ($tmpDetail->item == $keyItem) {
                         $exist = true;
                     }
                 }
@@ -109,21 +268,17 @@ class DashboardController extends Controller
             $existOld = false;
             if ($xsDetailOld) {
                 foreach ($xsDetailOld as $tmpDetail) {
-                    if (intval($tmpDetail->item) == $keyItem) {
+                    if ($tmpDetail->item == $keyItem) {
                         $existOld = true;
                     }
                 }
             }
-            if (!isset($arrAll5[$keyItem])) {
-                $arrAll5[$keyItem] = [
-                    'value' => $value,
-                    'key' => $keyItem,
-                ];
-            }
-            $arrAll5[$keyItem]['exist'] = $exist;
-            $arrAll5[$keyItem]['existOld'] = $existOld;
+            $tmp = $value;
+            $tmp['exist'] = $exist;
+            $tmp['existOld'] = $existOld;
+            $dataAll[$keyItem] = $tmp;
         }
-        foreach ($arrAll5 as $key => $value) {
+        foreach ($dataAll as $key => $value) {
             $exist = false;
             $countExist = 0;
             foreach ($xsDetail as $tmpDetail) {
@@ -133,58 +288,16 @@ class DashboardController extends Controller
                 }
             }
             if ($exist) {
-                if (!isset($arrAll5[$key]['count'])) {
-                    $arrAll5[$key]['count'] = $countExist;
+                if (!isset($dataAll[$key]['count'])) {
+                    $dataAll[$key]['count'] = $countExist;
                 } else {
-                    $arrAll5[$key]['count'] += $countExist;
+                    $dataAll[$key]['count'] += $countExist;
                 }
             }
         }
-        $arrAll5 = collect($arrAll5)->sortByDesc('value')->toArray();
 
         $day = $request->day ?? Carbon::now()->format('Y-m-d');
-        $info = Result::whereMonth('day', Carbon::parse($day)->format('m'))->where('type', 5)
-            ->whereYear('day', Carbon::parse($day)->format('Y'))->orderBy('day')->get();
-
-        $dataInMonthMoney5 = [];
-        $backGround5 = [];
-        $totalInMonth5 = 0;
-        foreach ($info as $key => $item) {
-            if (isset($dataInMonthMoney5[number_format($item->total*$item->point*80000 - $item->point * 21900*3)])) {
-                $dataInMonthMoney5[number_format($item->total*$item->point*80000 - $item->point * 21900*3)]++;
-            } else {
-                $dataInMonthMoney5[number_format($item->total*$item->point*80000 - $item->point * 21900*3)] = 1;
-            }
-            $totalInMonth5 += $item->total*$item->point*80000 - $item->point * 21900*3;
-            $class = 'Gray';
-            switch ($item->total) {
-                case 0:
-                    $class = 'Gray';
-                    break;
-                case 1:
-                    $class = '#66FFFF';
-                    break;
-                case 2:
-                    $class = '#00CC33';
-                    break;
-                case 3:
-                    $class = '#006666';
-                    break;
-                default:
-                    $class = 'Red';
-            }
-            $backGround5[number_format($item->total*$item->point*80000 - $item->point * 21900*3)] = $class;
-        }
-        $dataCompare5 = [];
-        foreach ($dataInMonthMoney5 as $key => $value) {
-            $dataCompare5[$key . '(' . $value .')'] = $value;
-        }
-
-
-
-
-        $day = $request->day ?? Carbon::now()->format('Y-m-d');
-        $info = Result::whereMonth('day', Carbon::parse($day)->format('m'))->where('type', 3)
+        $info = Result::whereMonth('day', Carbon::parse($day)->format('m'))->where('type', $type)
             ->whereYear('day', Carbon::parse($day)->format('Y'))->orderBy('day')->get();
 
         $dataInMonthMoney = [];
@@ -221,45 +334,14 @@ class DashboardController extends Controller
             $dataCompare[$key . '(' . $value .')'] = $value;
         }
 
-        $day = $request->day ?? Carbon::now()->format('Y-m-d');
-        $info = Result::whereDate('day', '>=', Carbon::parse($day)->addYears(-1)->format('Y-m-01'))->where('type', 3)
-            ->whereDate('day', '<', Carbon::parse($day)->addMonths(1)->format('Y-m-01'))->orderBy('day')->get();
-
-        $dataInYear = [];   
-        $totalYear = 0;
-        foreach ($info as $key => $item) {
-            $price = $item->total*$item->point*80000 - $item->point * 21900*3;
-            if (isset($dataInYear[Carbon::parse($item->day)->format('Y-m')])) {
-                $dataInYear[Carbon::parse($item->day)->format('Y-m')] += $price;
-            } else {
-                $dataInYear[Carbon::parse($item->day)->format('Y-m')] = $price;
-            }
-            $totalYear += $price;
-        }
-
-        return view('producer.dashboard.index', [
-            'title' => 'Good luck',
-            'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
-            'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
-            'arrAll3' => $arrAll3,
-            'arrAll5' => $arrAll5,
-            'backGround' => $backGround,
-            'dataInMonthMoney' => $dataCompare,
+        return [
+            'data' => $dataAll,
+            'dataInMonthMoney' => $dataInMonthMoney,
+            'dataCompare' => $dataCompare,
             'totalInMonth' => $totalInMonth,
-            'dataInYear' => $dataInYear,
-            'totalYear' => $totalYear,
-            // 'dataLottery' => $dataLottery,
-            'prevMonth' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
-            'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
-            'prevYear' => Carbon::parse($day)->addYears(-1)->format('Y-m'),
-            'nextYear' => Carbon::parse($day)->addYears(1)->format('Y-m'),
-            'dataCompare5' => $dataCompare5,
-            'backGround5' => $backGround5,
-            'dataInMonthMoney5' => $dataCompare5,
-            'totalInMonth5' => $totalInMonth5,
-        ]);
+            'backGround' => $backGround,
+        ];
     }
-
     /**
      * Show the form for creating a new resource.
      *

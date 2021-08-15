@@ -60,7 +60,7 @@ class Check extends Command
                 ])
                 ->with(['xsDay'])
                 ->whereHas('xsDay', function($q) use ($startDate) {
-                    $q->whereDate('day', '<', Carbon::parse($startDate));
+                    $q->whereDate('day', '<', Carbon::parse($startDate)->addDays(-1));
                 })
                 ->get();
                 foreach ($dayOld as $dayTmp) {

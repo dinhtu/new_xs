@@ -45,7 +45,7 @@ class checkNew extends Command
     public function handle()
     {
         $maxDate = Result::where('type', 3)->max('day');
-        $startDate = empty($maxDate) ? "2010-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
+        $startDate = empty($maxDate) ? "2021-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         $zero = 0;
         $one = 0;

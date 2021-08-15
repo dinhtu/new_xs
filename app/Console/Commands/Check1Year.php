@@ -10,14 +10,14 @@ use Carbon\Carbon;
 use DB;
 use Log;
 
-class Check5Year extends Command
+class Check1Year extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:Check5Year';
+    protected $signature = 'command:Check1Year';
 
     /**
      * The console command description.
@@ -43,13 +43,13 @@ class Check5Year extends Command
      */
     public function handle()
     {
-        Log::channel('log_batch')->info('start batch file check 5 year');
-        $maxDate = Predict::where('type', 2)->max('day');
+        Log::channel('log_batch')->info('start batch file check 1 year');
+        $maxDate = Predict::where('type', 4)->max('day');
         $startDate = empty($maxDate) ? "2020-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
         // $startDate = "2010-01-01";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         while (Carbon::parse($startDate) < $now) {
-            Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d').'_check 5 year');
+            Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d').'_check 1 year');
             $day = XsDay::whereDate('day', Carbon::parse($startDate)->addDays(-1))->with(['xsDetails'])->first();
             $xsDetails = $day->xsDetails ?? [];
             $dataAll = [];
@@ -61,7 +61,7 @@ class Check5Year extends Command
                 ->with(['xsDay'])
                 ->whereHas('xsDay', function($q) use ($startDate) {
                     $q->whereDate('day', '<', Carbon::parse($startDate)->addDays(-1));
-                    $q->whereDate('day', '>=', Carbon::parse($startDate)->addYears(-5));
+                    $q->whereDate('day', '>=', Carbon::parse($startDate)->addYears(-1));
                 })
                 ->get();
                 foreach ($dayOld as $dayTmp) {
@@ -92,13 +92,13 @@ class Check5Year extends Command
                 $dataAll = $dataAll->slice(0, 15);
                 $predict = new Predict();
                 $predict->day = Carbon::parse($startDate);
-                $predict->type = 2;
+                $predict->type = 4;
                 $predict->detail = json_encode($dataAll);
                 $predict->save();
-                Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'). '-complete_check 5 year');
+                Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'). '-complete_check 1 year');
             }
             $startDate =  Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
         }
-        Log::channel('log_batch')->info('complete_check 5 year');
+        Log::channel('log_batch')->info('complete_check 1 year');
     }
 }

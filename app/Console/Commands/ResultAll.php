@@ -3,22 +3,21 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\XsDay;
-use App\Models\XsDetail;
-use App\Models\Predict;
+use Log;
+use Carbon\Carbon;
 use App\Models\Result;
 use App\Models\Point;
-use Carbon\Carbon;
-use Log;
+use App\Models\Predict;
+use App\Models\XsDay;
 
-class Result5Year extends Command
+class ResultAll extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:Result5Year';
+    protected $signature = 'command:ResultAll {type?}';
 
     /**
      * The console command description.
@@ -44,84 +43,58 @@ class Result5Year extends Command
      */
     public function handle()
     {
-        $maxDate = Result::where('type', 5)->max('day');
-        $startDate = empty($maxDate) ? "2021-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
+        $type = $this->argument('type');
+        Log::channel('log_batch')->info('start batch file result '. $type);
+        $maxDate = Result::where('type', $type)->max('day');
+        $startDate = empty($maxDate) ? "2020-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
         //$startDate = "2010-01-01";
         $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         $currentPoint = Point::first()->point ?? 10;
         while (Carbon::parse($startDate) < $now) {
-            Log::channel('log_batch')->info('result:'. $startDate);
-            $info = Predict::whereDate('day', Carbon::parse($startDate))->where('type', 5)->first();
+            Log::channel('log_batch')->info('result:' . $type . '_'. $startDate);
+            $info = Predict::whereDate('day', Carbon::parse($startDate))->where('type', $type)->first();
             if ($info) {
                 $info = json_decode($info->detail, true);
             } else {
                 $startDate = Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
                 continue;
             }
-            
             $detail = XsDay::whereDate('day', Carbon::parse($startDate))->with(['xsDetails'])->first();
             $xsDetail = $detail->xsDetails ?? [];
-            $data = [];
-            $countExist = 0;
-            $total = 0;
-            $tmpExist = [];
-            $arrAll = [];
+            $dataAll = [];
             foreach ($info as $keyItem => $value) {
                 $tmp = [];
                 $exist = false;
                 if ($xsDetail) {
                     foreach ($xsDetail as $tmpDetail) {
-                        if (intval($tmpDetail->item) == $keyItem) {
+                        if ($tmpDetail->item == $keyItem) {
                             $exist = true;
                         }
                     }
                 }
-                if (!isset($arrAll[$keyItem])) {
-                    $arrAll[$keyItem] = [
-                        'value' => $value,
-                        'key' => $keyItem,
-                    ];
-                }
-                $arrAll[$keyItem]['exist'] = $exist;
+                $tmp = $value;
+                $tmp['exist'] = $exist;
+                $tmp['count'] = 0;
+                $dataAll[$keyItem] = $tmp;
             }
-            foreach ($arrAll as $key => $value) {
-                $exist = false;
-                $countExist = 0;
-                foreach ($xsDetail as $tmpDetail) {
-                    if (intval($tmpDetail->item) == intval($value['key'])) {
-                        $exist = true;
-                        $countExist++;
-                    }
-                }
-                if ($exist) {
-                    if (!isset($arrAll[$key]['count'])) {
-                        $arrAll[$key]['count'] = $countExist;
-                    } else {
-                        $arrAll[$key]['count'] += $countExist;
-                    }
-                }
-            }
-            $arrAll = collect($arrAll)->sortByDesc('value')->toArray();
             $i = 0;
             $count = 0;
-            foreach ($arrAll as $key => $value) {
+            foreach ($dataAll as $key => $value) {
                 if ($i >= 3) {
                     continue;
                 }
-                if ($xsDetail && $value['exist']) {
-                    foreach ($xsDetail as $tmpDetail) {
-                        if (intval($tmpDetail->item) == $value['key']) {
-                            $count++;
-                        }
+                foreach ($xsDetail as $tmpDetail) {
+                    if (intval($tmpDetail->item) == intval($value['key'])) {
+                        $count++;
                     }
                 }
                 $i++;
             }
-            if ($info) {
+            if ($info && $xsDetail) {
                 $result = new Result();
                 $result->day = Carbon::parse($startDate);
                 $result->total = $count;
-                $result->type = 5;
+                $result->type = $type;
                 $result->save();
                 Log::channel('log_batch')->info('save_result_complete_'.Carbon::parse($startDate)->format('Y-m-d'));
             }

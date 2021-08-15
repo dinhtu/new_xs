@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use App\Models\XsDay;
 use App\Models\XsDetail;
 use DB;
+use App\Enums\Location;
 
 class GetXs extends Command
 {
@@ -53,7 +54,7 @@ class GetXs extends Command
         Log::channel('log_batch')->info('start batch file');
         $maxDate = XsDay::max('day');
         $startDate = empty($maxDate) ? "2007-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
-        // $startDate = '2007-02-18';
+        // $startDate = '2007-01-01';
         $now = Carbon::parse(Carbon::now()->format('Y-m-d'));
         // $url = 'https://ketqua.net/xo-so.php?ngay=';
         $url = 'https://xskt.com.vn/xsmb/ngay-';
@@ -63,9 +64,7 @@ class GetXs extends Command
                 Log::channel('log_batch')->info(Carbon::parse($startDate)->format('Y-m-d'));
                 $xsDay = new XsDay();
                 $xsDay->day = Carbon::parse($startDate);
-                if (!$xsDay->save()) {
-                    return false;
-                }
+                
 
                 $crawlerPage = new Crawler;
                 $tmp = Carbon::parse($startDate);
@@ -74,6 +73,18 @@ class GetXs extends Command
 
                 $stt = 0;
                 $existDetail = false;
+                $table->each(function (Crawler $nodeTable) use (&$xsDay) {
+                    $nodeTable->filter('h3')->each(function (Crawler $nodeDev) use (&$xsDay) {
+                        $start = strpos($nodeDev->text(), '(');
+                        $end = strpos($nodeDev->text(), ')');
+                        $text = substr($nodeDev->text(), $start + 1, $end - $start - 1);
+                        $xsDay->type = Location::getValue(mb_strtolower($text));
+                    });
+                    
+                });
+                if (!$xsDay->save()) {
+                    return false;
+                }
                 $table->each(function (Crawler $nodeTable) use (&$stt, $xsDay, &$existDetail) {
                     $nodeTable->filter('em')->each(function (Crawler $nodeDev) use (&$stt, $xsDay) {
                         $xsDetail = new XsDetail();
@@ -86,6 +97,7 @@ class GetXs extends Command
                         }
                         $stt++;
                     });
+                    
                     $nodeTable->filter('p')->each(function (Crawler $nodeDev) use (&$stt, $xsDay, &$existDetail) {
                         $br = explode("<br>", $nodeDev->html());
                         foreach ($br as $itemBr) {
@@ -112,6 +124,7 @@ class GetXs extends Command
                     DB::rollback();
                 }
             } catch (\Throwable $th) {
+                dd($th->getMessage());
             }
             $startDate =  Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
         }
