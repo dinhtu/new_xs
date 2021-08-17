@@ -60,7 +60,7 @@ class DashboardController extends Controller
             }
         }
         // $dataTotal = collect($dataTotal)->sortByDesc('value');
-        $dataTotal = collect($dataTotal)->sortBy('key');
+        $dataTotal = collect($dataTotal)->sortBy('value');
         // $dataTotal = $dataTotal->slice(0, 30);
         // dd($dataTotal->toArray());
         

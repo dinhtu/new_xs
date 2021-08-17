@@ -44,7 +44,7 @@ class ResultController extends Controller
         // $dataConvert = collect($dataConvert)->sortBy('key');
         $arrSearch = [];
         foreach($dataConvert as $key => $item) {
-            for ($i = 3; $i <= 7; $i++) {
+            for ($i = 2; $i <= 7; $i++) {
                 $searchItem = [];
                 for ($j = 0; $j < $i; $j++) { 
                     if (isset($item[Carbon::parse($day)->addDays(-$j - 1)->format('Y/m/d')])) {
