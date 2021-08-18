@@ -28,4 +28,5 @@ Route::group([
     //route producer
     Route::resource('dashboard', DashboardController::class, ['as' => 'producer']);
     Route::resource('result', ResultController::class, ['as' => 'producer']);
+    Route::resource('mute', MuteController::class, ['as' => 'producer']);
 });

@@ -21,7 +21,7 @@ class ResultController extends Controller
     {
         $day = $request->day ?? Carbon::now()->format('Y-m-d');
         $xsDays = XsDay::whereDate('day', '<', Carbon::parse($day))
-            ->whereDate('day', '>=', Carbon::parse($day)->addDays(-99))
+            ->whereDate('day', '>=', Carbon::parse($day)->addDays(-90))
             ->orderBy('day', 'DESC')
             ->with(['xsDetails'])
             ->get();
@@ -85,7 +85,15 @@ class ResultController extends Controller
                             $flagSame = false;
                         }
                     }
-                    if ($flagSame) {
+                    $checkEmpty = false;
+                    $countEmpty = 0;
+                    for ($i = 0; $i < $keySearch; $i++) { 
+                        if (!$tmp[$i]) {
+                            $countEmpty++;
+                            $checkEmpty = true;
+                        }
+                    }
+                    if ($flagSame && $checkEmpty && $countEmpty <= 2) {
                         // dd(isset($dataInSearch[Carbon::parse($day)->addDays(-$j)->format('Y/m/d')]));
                         $arrSearchResult[$key][$keySearch][] = [
                             'val' => isset($dataInSearch[Carbon::parse($day)->addDays(-$j)->format('Y/m/d')]),

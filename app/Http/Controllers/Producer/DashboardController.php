@@ -33,8 +33,7 @@ class DashboardController extends Controller
                 $arr[$value->item] = 1;
             }
         }
-        
-        $xsDays = XsDay::whereDate('day', '<=', Carbon::parse($day)->addDays(3))
+        $xsDays = XsDay::whereDate('day', '<=', Carbon::parse($day)->addDays(-1))
             ->whereDate('day', '>=', Carbon::parse($day)->addDays(-99))
             ->orderBy('day', 'DESC')
             ->with(['xsDetails'])
@@ -60,6 +59,7 @@ class DashboardController extends Controller
             }
         }
         $dataTotal = collect($dataTotal)->sortByDesc('value');
+        // dd($dataTotal);
         // $dataTotal = collect($dataTotal)->sortBy('key');
         // $dataTotal = $dataTotal->slice(0, 30);
         // dd($dataTotal->toArray());

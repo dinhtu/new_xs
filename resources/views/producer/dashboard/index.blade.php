@@ -14,7 +14,8 @@ use Carbon\Carbon;
         background-color: #39f !important;
     }
     .tablexs th, .tablexs td{
-        padding:2px 2px !important
+        padding:1px 1px !important;
+        width: 5px;
     }
     .tablexs {
     /* width: 100%; */ /* Optional */
