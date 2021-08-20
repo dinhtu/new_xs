@@ -70,7 +70,7 @@ class DashboardController extends Controller
             'next' => Carbon::parse($day)->addDays(1)->format('Y-m-d'),
             'dataAll' => $this->GetData($request, 68),
             'currentDate' =>  Carbon::parse($day)->format('Y/m/d'),
-            // 'dataAll' => $this->GetData($request, 1),
+            'data100' => $this->GetData($request, 100),
             // 'data5Year' => $this->GetData($request, 2),
             // 'data3Year' => $this->GetData($request, 3),
             // 'data1Year' => $this->GetData($request, 4),

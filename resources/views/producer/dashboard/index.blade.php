@@ -115,6 +115,48 @@ thead tr th {
                 </div>
             </div>
         </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <strong>100 ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
+                </div>
+                <div class="card-body" id="all">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev, '#all']) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next, '#all']) }}"> Next</a>
+                </div>
+                    <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
+                        <tbody>
+                        @php
+                        $i = 1;
+                        @endphp
+                        @foreach ($data100['data'] as $item)
+                            @php
+                            if($i > $max) {
+                                continue;
+                            }
+                            $i++;
+                            $class = '';
+                                if ($item['exist']) {
+                                    $class = 'btn-success';
+                                }
+                                if ($item['existOld']) {
+                                    $class = 'btn-exit-old';
+                                }
+                                if ($item['existOld'] && $item['exist']) {
+                                    $class = 'btn-exit-old-and-day';
+                                }
+                            @endphp
+                            <tr class="{{$class}}">
+                                <td>{{sprintf('%02d', $item['key']);}} {{$item['exist'] && $item['count'] != 1 ? '('.$item['count'].')' : ''}}</td>
+                                <td>{{$item['value']}}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         <div class="col-sm-12">
             <div class="card" style="overflow: auto;">
                 <div class="card-header" id="all1">
