@@ -48,10 +48,13 @@ class DashboardController extends Controller
                     $dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item]['value'] = 1;
                 }
                 if (isset($dataTotal[$detail->item]['value'])) {
-                    $dataTotal[$detail->item]['value']++;
+                    if (!isset($dataTotal[$detail->item]['day'][Carbon::parse($xsDay->day)->format('Y/m/d')])) {
+                        $dataTotal[$detail->item]['value']++;
+                    }
                 } else {
                     $dataTotal[$detail->item]['value'] = 1;
                     $dataTotal[$detail->item]['key'] = $detail->item;
+                    $dataTotal[$detail->item]['day'][Carbon::parse($xsDay->day)->format('Y/m/d')] = Carbon::parse($xsDay->day)->format('Y/m/d');
                 }
                 if ($detail->number_order == 0) {
                     $dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item]['special'] = 1;
