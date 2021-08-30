@@ -188,8 +188,18 @@ thead tr th {
                         <tbody>
                             <tr>
                                 <td></td>
+                                @php
+                                $i = 1;
+                                @endphp
                                 @foreach ($dataTotal as $key => $item)
-                                    <td>{{$key}}</td>
+                                @php
+                                $class = '';
+                                if($i <= 10) {
+                                    $class = 'btn-danger';
+                                }
+                                $i++;
+                                @endphp
+                                    <td class="{{$class}}">{{$key}}</td>
                                 @endforeach
                             </tr>
                             @foreach ($dataConvert as $key => $item)
