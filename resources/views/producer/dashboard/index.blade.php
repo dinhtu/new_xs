@@ -202,6 +202,9 @@ thead tr th {
                                     <td class="{{$class}}">{{$key}}</td>
                                 @endforeach
                             </tr>
+                            @php
+                            $first = true;
+                            @endphp
                             @foreach ($dataConvert as $key => $item)
                             <tr>
                                 <td>{{$key}}</td>
@@ -217,10 +220,16 @@ thead tr th {
                                     if(isset($item[sprintf('%02d', $keyTotal)]) && isset($item[sprintf('%02d', $keyTotal)]['special'])) {
                                         $class = 'btn-danger';
                                     }
+                                    if ($first && isset($xsDetailsDay[sprintf('%02d', $keyTotal)])) {
+                                        $class = 'btn-info';
+                                    }
                                 @endphp
                                 <td class="{{$class}}">{{isset($item[sprintf('%02d', $keyTotal)]) ? $item[sprintf('%02d', $keyTotal)]['value'] : ''}}</td>
                                 @endforeach
                             </tr>
+                            @php
+                            $first = false;
+                            @endphp
                             @endforeach
                             <tr>
                                 <td></td>

@@ -34,9 +34,10 @@ class DashboardController extends Controller
             }
         }
         $xsDays = XsDay::whereDate('day', '<=', Carbon::parse($day)->addDays(-1))
-            ->whereDate('day', '>=', Carbon::parse($day)->addDays(-99))
+            // ->whereDate('day', '>=', Carbon::parse($day)->addDays(-99))
             ->orderBy('day', 'DESC')
             ->with(['xsDetails'])
+            ->limit(99)
             ->get();
         $dataConvert = [];
         $dataTotal = [];
@@ -62,6 +63,9 @@ class DashboardController extends Controller
             }
         }
         $dataTotal = collect($dataTotal)->sortByDesc('value');
+        $xsDetailsDay = XsDetail::whereHas('xsDay', function($q) use ($day) {
+            $q->whereDate('day', Carbon::parse($day));
+        })->pluck('item', 'item');
         // dd($dataTotal);
         // $dataTotal = collect($dataTotal)->sortBy('key');
         // $dataTotal = $dataTotal->slice(0, 30);
@@ -82,6 +86,7 @@ class DashboardController extends Controller
             'prevMonth' => Carbon::parse($day)->addMonths(-1)->format('Y-m'),
             'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
             'arr' => $arr,
+            'xsDetailsDay' => $xsDetailsDay,
             'dataConvert' => $dataConvert,
             'dataTotal' => $dataTotal,
             'dualResult' => $this->getDual($day),
