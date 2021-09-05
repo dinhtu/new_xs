@@ -42,6 +42,8 @@ class DashboardController extends Controller
         $dataConvert = [];
         $dataTotal = [];
         $dataSpecial = [];
+        $countLess = 0;
+        $countBigger = 0;
         foreach ($xsDays as $key => $xsDay) {
             foreach ($xsDay->xsDetails as $detail) {
                 if (isset($dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item])) {
@@ -54,6 +56,12 @@ class DashboardController extends Controller
                         "date" => Carbon::parse($xsDay->day)->format('Y/m/d'),
                         ($detail->item >= 50 ? 'bigger' : 'less') => $detail->item
                     ];
+                    if ($detail->item >= 50) {
+                        $countBigger++;
+                    } else {
+                        $countLess++;
+                    }
+
                 }
                 if (isset($dataTotal[$detail->item]['value'])) {
                     if (!isset($dataTotal[$detail->item]['day'][Carbon::parse($xsDay->day)->format('Y/m/d')])) {
@@ -137,6 +145,8 @@ class DashboardController extends Controller
             'arr' => $arr,
             'xsDetailsDay' => $xsDetailsDay,
             'dataConvert' => $dataConvert,
+            'countBigger' => $countBigger,
+            'countLess' => $countLess,
             'dataTotal' => $dataTotal,
             'dataSpecial' => $dataSpecial,
             'xsDaySpecialCurrent' => $xsDaySpecialCurrent,

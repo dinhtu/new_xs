@@ -292,8 +292,8 @@ thead tr th {
                             </tr>
                             <tr>
                                 <td>Date</td>
-                                <td>less</td>
-                                <td>bigger</td>
+                                <td>less ({{$countLess}})</td>
+                                <td>bigger ({{$countBigger}})</td>
                             </tr>
                             @foreach ($dataSpecial as $key => $item)
                                 <tr>
