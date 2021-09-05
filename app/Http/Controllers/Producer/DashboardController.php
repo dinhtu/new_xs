@@ -41,12 +41,19 @@ class DashboardController extends Controller
             ->get();
         $dataConvert = [];
         $dataTotal = [];
+        $dataSpecial = [];
         foreach ($xsDays as $key => $xsDay) {
             foreach ($xsDay->xsDetails as $detail) {
                 if (isset($dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item])) {
                     $dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item]['value'] ++;
                 } else {
                     $dataConvert[Carbon::parse($xsDay->day)->format('Y/m/d')][$detail->item]['value'] = 1;
+                }
+                if (!$detail->number_order) {
+                    $dataSpecial[] = [
+                        "date" => Carbon::parse($xsDay->day)->format('Y/m/d'),
+                        ($detail->item >= 50 ? 'bigger' : 'less') => $detail->item
+                    ];
                 }
                 if (isset($dataTotal[$detail->item]['value'])) {
                     if (!isset($dataTotal[$detail->item]['day'][Carbon::parse($xsDay->day)->format('Y/m/d')])) {
@@ -89,6 +96,7 @@ class DashboardController extends Controller
             'xsDetailsDay' => $xsDetailsDay,
             'dataConvert' => $dataConvert,
             'dataTotal' => $dataTotal,
+            'dataSpecial' => $dataSpecial,
             'dualResult' => $this->getDual($day),
             'dualResultOld1' => $this->getDual(Carbon::parse($day)->addDays(-1)->format('Y-m-d')),
             'dualResultOld2' => $this->getDual(Carbon::parse($day)->addDays(-2)->format('Y-m-d')),

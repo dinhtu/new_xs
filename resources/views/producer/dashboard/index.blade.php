@@ -157,6 +157,7 @@ thead tr th {
                 </div>
             </div>
         </div>
+        
         <div class="col-sm-12">
             <div class="card" style="overflow: auto;">
                 <div class="card-header" id="all1">
@@ -243,6 +244,36 @@ thead tr th {
                                     <td>{{$item['value']}}</td>
                                 @endforeach
                             </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Special ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
+                </div>
+                <div class="card-body" id="special">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev, '#special']) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next, '#special']) }}"> Next</a>
+                </div>
+                    <table class="table table-responsive-sm table-bordered table-striped text-center tmp tablexs">
+                        <tbody>
+                            <tr>
+                                <td>Date</td>
+                                <td>less</td>
+                                <td>bigger</td>
+                                
+                            </tr>
+                            @foreach ($dataSpecial as $key => $item)
+                                <tr>
+                                    <td>{{$item['date']}}</td>
+                                    <td class="{{isset($item['less']) ? 'btn-success' : 'grey'}}">{{isset($item['less']) ? $item['less'] : ''}}</td>
+                                    <td class="{{isset($item['bigger']) ? 'btn-success' : 'grey'}}">{{isset($item['bigger']) ? $item['bigger'] : ''}}</td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
