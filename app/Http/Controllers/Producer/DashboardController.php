@@ -77,7 +77,49 @@ class DashboardController extends Controller
         // $dataTotal = collect($dataTotal)->sortBy('key');
         // $dataTotal = $dataTotal->slice(0, 30);
         // dd($dataTotal->toArray());
-        
+        $xsDaySpecial = XsDay::whereDate('day', Carbon::parse($day)->addDays(-1))
+            ->orderBy('day', 'DESC')
+            ->with(['xsDetailNext' => function($q) {
+                $q->where('number_order', 0);
+            }])
+            ->first();
+            
+        $totalSpecial = XsDay::whereDate('day', '<', Carbon::parse($day)->addDays(-1))
+            ->whereDate('day', '>=', Carbon::parse($day)->addYears(-1))
+            ->orderBy('day', 'DESC')
+            ->whereHas('xsDetails', function($q) use ($xsDaySpecial) {
+                $q->where('number_order', 0);
+                $q->where('item', $xsDaySpecial->xsDetailNext->item ?? 100);
+            })
+            ->get();
+        $countSpecial = [
+            'less' => 0,
+            'bigger' => 0,
+        ];
+        foreach ($totalSpecial as $item) {
+            $xsDaySpecialNext = XsDay::whereDate('day', Carbon::parse($item->day)->addDays(1))
+                // ->whereDate('day', '>=', Carbon::parse($day)->addDays(-99))
+                ->orderBy('day', 'DESC')
+                ->with(['xsDetailNext' => function($q) {
+                    $q->where('number_order', 0);
+                }])
+                ->first();
+                if (!$xsDaySpecialNext) {
+                    continue;
+                }
+            if ($xsDaySpecialNext->xsDetailNext->item >= 50) {
+                $countSpecial['bigger'] ++;
+            } else {
+                $countSpecial['less'] ++;
+            }
+        }
+        $xsDaySpecialCurrent = XsDay::whereDate('day', Carbon::parse($day))
+            // ->whereDate('day', '>=', Carbon::parse($day)->addDays(-99))
+            ->orderBy('day', 'DESC')
+            ->with(['xsDetailNext' => function($q) {
+                $q->where('number_order', 0);
+            }])
+            ->first();
         return view('producer.dashboard.index', [
             'title' => 'Good luck',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
@@ -97,6 +139,8 @@ class DashboardController extends Controller
             'dataConvert' => $dataConvert,
             'dataTotal' => $dataTotal,
             'dataSpecial' => $dataSpecial,
+            'xsDaySpecialCurrent' => $xsDaySpecialCurrent,
+            'countSpecial' => $countSpecial,
             'dualResult' => $this->getDual($day),
             'dualResultOld1' => $this->getDual(Carbon::parse($day)->addDays(-1)->format('Y-m-d')),
             'dualResultOld2' => $this->getDual(Carbon::parse($day)->addDays(-2)->format('Y-m-d')),

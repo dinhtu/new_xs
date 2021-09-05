@@ -262,10 +262,38 @@ thead tr th {
                     <table class="table table-responsive-sm table-bordered table-striped text-center tmp tablexs">
                         <tbody>
                             <tr>
+                                <td>count old</td>
+                                @php
+                                    $class = '';
+                                    if ($xsDaySpecialCurrent) {
+                                        if ($countSpecial['less'] > $countSpecial['bigger']) {
+                                            if ($xsDaySpecialCurrent->xsDetailNext->item < 50) {
+                                                $class = 'btn-success';
+                                            } else {
+                                                $class = 'btn-danger';
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                <td class="{{$class}}">{{$countSpecial['less']}}</td>
+                                @php
+                                    $class = '';
+                                    if ($xsDaySpecialCurrent) {
+                                        if ($countSpecial['less'] < $countSpecial['bigger']) {
+                                            if ($xsDaySpecialCurrent->xsDetailNext->item >= 50) {
+                                                $class = 'btn-success';
+                                            } else {
+                                                $class = 'btn-danger';
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                <td class="{{$class}}">{{$countSpecial['bigger']}}</td>
+                            </tr>
+                            <tr>
                                 <td>Date</td>
                                 <td>less</td>
                                 <td>bigger</td>
-                                
                             </tr>
                             @foreach ($dataSpecial as $key => $item)
                                 <tr>
