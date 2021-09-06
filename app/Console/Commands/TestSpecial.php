@@ -44,7 +44,7 @@ class TestSpecial extends Command
      */
     public function handle()
     {
-        $startDate = "2021-07-01";
+        $startDate = "2021-01-01";
         $now = Carbon::parse('2021-08-01');
         // $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
         $money = 0;
@@ -109,7 +109,7 @@ class TestSpecial extends Command
                 }
             }
             if (!$flagSame) {
-                $money += $flagTrue ? 840000 : -500000;
+                $money += $flagTrue ? 340000 : -500000;
                 Log::channel('log_batch')->info($flagTrue ? 840000 : -500000);
             }
             $startDate =  Carbon::parse($startDate)->addDays(1)->format('Y-m-d');

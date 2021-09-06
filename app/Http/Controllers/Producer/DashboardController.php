@@ -128,6 +128,128 @@ class DashboardController extends Controller
                 $q->where('number_order', 0);
             }])
             ->first();
+        $duplicate = [
+            [
+                'key' => ['02', '10'],
+                'result' => ['89', '98']
+            ],
+            [
+                'key' => ['24', '42'],
+                'result' => ['27', '72']
+            ],
+            [
+                'key' => ['78', '87'],
+                'result' => ['48', '84']
+            ],
+            [
+                'key' => ['48', '84'],
+                'result' => ['05', '50']
+            ],
+            [
+                'key' => ['36', '63'],
+                'result' => ['38', '83']
+            ],
+            [
+                'key' => ['38', '83'],
+                'result' => ['67', '76']
+            ],
+            [
+                'key' => ['45', '54'],
+                'result' => ['56', '65']
+            ],
+            [
+                'key' => ['47', '74'],
+                'result' => ['79', '97']
+            ],
+            [
+                'key' => ['23', '32'],
+                'result' => ['34', '43']
+            ],
+            [
+                'key' => ['14', '41'],
+                'result' => ['18', '81']
+            ],
+            [
+                'key' => ['57', '75'],
+                'result' => ['58', '85']
+            ],
+            [
+                'key' => ['69', '96'],
+                'result' => ['17', '71']
+            ],
+            [
+                'key' => ['05', '50'],
+                'result' => ['26', '62']
+            ],
+            [
+                'key' => ['02', '20'],
+                'result' => ['12', '21']
+            ],
+            [
+                'key' => ['00', '01'],
+                'result' => ['10', '99']
+            ],
+            [
+                'key' => ['11', '10'],
+                'result' => ['01']
+            ],
+            [
+                'key' => ['51', '59'],
+                'result' => ['15']
+            ],
+            [
+                'key' => ['97', '79'],
+                'result' => ['37', '73']
+            ],
+            [
+                'key' => ['66', '99'],
+                'result' => ['66']
+            ],
+            [
+                'key' => ['68', '69'],
+                'result' => ['86']
+            ],
+            [
+                'key' => ['06', '60'],
+                'result' => ['06', '60']
+            ],
+            [
+                'key' => ['05', '50'],
+                'result' => ['05', '50']
+            ],
+        ];
+        $arrCheck = [];
+        $xsDayOld = XsDay::whereDate('day', Carbon::parse($day)->addDays(-1))
+            ->orderBy('day', 'DESC')
+            ->with(['xsDetails'])
+            ->first();
+        foreach ($duplicate as $item) {
+            $flagExist = true;
+            foreach ($item['key'] as $key) {
+                $exist = false;
+                if (!$xsDayOld) {
+                    $flagExist = false;
+                    continue;
+                }
+                foreach ($xsDayOld->xsDetails as $xsDetail) {
+                    if ($xsDetail->item == $key) {
+                        $exist = true;
+                    }
+                }
+                if (!$exist) {
+                    $flagExist = false;
+                }
+            }
+            if ($flagExist) {
+                foreach ($item['result'] as $key) {
+                    $arrCheck[] = [
+                        'key' => $key,
+                        'exist' => isset($xsDetailsDay[$key]),
+                        'event' => '('.join(",",$item['key']).')'
+                    ];
+                }
+            }
+        }
         return view('producer.dashboard.index', [
             'title' => 'Good luck',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
@@ -148,6 +270,7 @@ class DashboardController extends Controller
             'countBigger' => $countBigger,
             'countLess' => $countLess,
             'dataTotal' => $dataTotal,
+            'arrCheck' => $arrCheck,
             'dataSpecial' => $dataSpecial,
             'xsDaySpecialCurrent' => $xsDaySpecialCurrent,
             'countSpecial' => $countSpecial,

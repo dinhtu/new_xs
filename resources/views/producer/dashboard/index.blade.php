@@ -157,7 +157,29 @@ thead tr th {
                 </div>
             </div>
         </div>
-        
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Duplicate ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
+                </div>
+                <div class="card-body" id="all">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev, '#all']) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next, '#all']) }}"> Next</a>
+                </div>
+                    <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
+                        <tbody>
+                        @foreach ($arrCheck as $item)
+                            <tr class="{{$item['exist'] ? 'btn-success' : ''}}">
+                                <td>{{$item['key']}}</td>
+                                <td>{{$item['event']}}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         <div class="col-sm-12">
             <div class="card" style="overflow: auto;">
                 <div class="card-header" id="all1">
