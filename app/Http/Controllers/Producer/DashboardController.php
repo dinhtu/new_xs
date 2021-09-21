@@ -250,6 +250,57 @@ class DashboardController extends Controller
                 }
             }
         }
+        $pairOfNumber = [];
+        for ($i=0; $i < 100; $i++) { 
+            $stt = sprintf('%02d', $i);
+            $first = substr(trim($stt), 0, 1);
+            $last = substr(trim($stt), 1, 1);
+            if (isset($pairOfNumber[$first . '_' . $last]) || isset($pairOfNumber[$last . '_' . $first])) {
+                continue;
+            }
+            if ($first == $last) {
+                if ($first >= 5) {
+                    continue;
+                }
+                $pairOfNumber[$first . '_' . $last] = [
+                    $first . '' . $last,
+                    $i + 55
+                ];
+            } else {
+                $pairOfNumber[$first . '_' . $last] = [
+                    $first . '' . $last,
+                    $last . '' . $first,
+                ];
+            }
+        }
+        $pairOfNumberRes = [];
+        $pairOfNumberCount = [];
+        foreach ($xsDays as $xsDay) {
+            foreach ($pairOfNumber as $itemPair) {
+                $flagExist = false;
+                $countTmp = 0;
+                foreach ($itemPair as $value) {
+                    foreach ($xsDay->xsDetails as $xsDetail) {
+                        if ($xsDetail->item == $value) {
+                            $countTmp++;
+                        }
+                    }
+                }
+                if (isset($pairOfNumberCount[join('_', $itemPair)])) {
+                    $pairOfNumberCount[join('_', $itemPair)]['count'] += $countTmp;
+                } else {
+                    $pairOfNumberCount[join('_', $itemPair)] = [
+                        'key' => $itemPair,
+                        'count' => $countTmp
+                    ];
+                }
+                if ($countTmp) {
+                    $pairOfNumberRes[Carbon::parse($xsDay->day)->format('Y/m/d')][join('_', $itemPair)] = $countTmp;
+                }
+            }
+        }
+        $pairOfNumberCount = collect($pairOfNumberCount)->sortByDesc('count');
+        // dd($pairOfNumberRes);
         return view('producer.dashboard.index', [
             'title' => 'Good luck',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
@@ -266,6 +317,8 @@ class DashboardController extends Controller
             'nextMonth' => Carbon::parse($day)->addMonths(1)->format('Y-m'),
             'arr' => $arr,
             'xsDetailsDay' => $xsDetailsDay,
+            'pairOfNumberCount' => $pairOfNumberCount,
+            'pairOfNumberRes' => $pairOfNumberRes,
             'dataConvert' => $dataConvert,
             'countBigger' => $countBigger,
             'countLess' => $countLess,

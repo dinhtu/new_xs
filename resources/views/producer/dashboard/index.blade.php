@@ -271,6 +271,64 @@ thead tr th {
                 </div>
             </div>
         </div>
+        <div class="col-sm-12">
+            <div class="card" style="overflow: auto;">
+                <div class="card-header" id="all68">
+                    <strong>new new new  ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
+                </div>
+                <div class="card-body">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev, '#all68']) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next, '#all68']) }}"> Next</a>
+                </div>
+                <table class="table table-responsive-sm table-bordered table-striped text-center tmp tablexs">
+                    <tr>
+                        <td></td>
+                        @foreach ($pairOfNumberCount as $key => $item)
+                            <td>{{$key}}</td>
+                        @endforeach
+                    </tr>
+                    @php
+                            $first = true;
+                            @endphp
+                            @foreach ($pairOfNumberRes as $key => $item)
+                            <tr>
+                                <td>{{$key}}</td>
+                                @foreach ($pairOfNumberCount as $keyTotal => $itemTotal)
+                                @php
+                                    $class = 'grey';
+                                    if($key == $currentDate) {
+                                        $class='btn-info';
+                                    }
+                                    if(isset($item[$keyTotal])) {
+                                        $class = 'btn-success';
+                                    }
+                                    
+                                    if ($first && (isset($xsDetailsDay[sprintf('%02d', $itemTotal['key'][0])]) || isset($xsDetailsDay[sprintf('%02d', $itemTotal['key'][1])]))) {
+                                    }
+                                @endphp
+                                <td class="{{$class}}">{{isset($item[$keyTotal]) ? $item[$keyTotal] : ''}}</td>
+                                @endforeach
+                            </tr>
+                            @php
+                            $first = false;
+                            @endphp
+                            @endforeach
+                            <tr>
+                                <td></td>
+                                @foreach ($pairOfNumberCount as $key => $item)
+                                    <td>{{$key}}</td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td></td>
+                                @foreach ($pairOfNumberCount as $key => $item)
+                                    <td>{{$item['count']}}</td>
+                                @endforeach
+                            </tr>
+                </table>
+            </div>
+        </div>
         <div class="col-sm-6">
             <div class="card">
                 <div class="card-header">
