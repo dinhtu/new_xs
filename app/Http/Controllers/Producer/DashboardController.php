@@ -300,7 +300,38 @@ class DashboardController extends Controller
             }
         }
         $pairOfNumberCount = collect($pairOfNumberCount)->sortByDesc('count');
-        // dd($pairOfNumberRes);
+        $day = $request->day ?? Carbon::now()->format('Y-m-d');
+        $twoDay = Predict::whereDate('day', Carbon::parse($day))->where('type', 268)->first();
+        if ($twoDay) {
+            $twoDay = json_decode($twoDay->detail, true);
+        } else {
+            $twoDay = [];
+        }
+        $xsDays = XsDay::whereDate('day', Carbon::parse($day))
+            ->with([
+                'xsDetails'
+            ])
+            ->first();
+        foreach ($twoDay as $key => $tmp) {
+           
+            $twoDay[$key]['exist'] = false;
+            $twoDay[$key]['count'] = '';
+            $count = 0;
+            if ($xsDays) {
+                // $last1 = substr(trim($value['key']), 0, 1);
+                // $last2 = substr(trim($value['key']), 1, 1);
+                foreach ($xsDays->xsDetails as $value) {
+                    if ($value->item == $tmp['key1'] || $value->item == $tmp['key2']) {
+                        $count++;
+                    }
+                }
+            }
+            if ($count) {
+                $twoDay[$key]['exist'] = true;
+                $twoDay[$key]['count'] = $count;
+            }
+        }
+        
         return view('producer.dashboard.index', [
             'title' => 'Good luck',
             'prev' => Carbon::parse($day)->addDays(-1)->format('Y-m-d'),
@@ -323,6 +354,7 @@ class DashboardController extends Controller
             'countBigger' => $countBigger,
             'countLess' => $countLess,
             'dataTotal' => $dataTotal,
+            'twoDay' => $twoDay,
             'arrCheck' => $arrCheck,
             'dataSpecial' => $dataSpecial,
             'xsDaySpecialCurrent' => $xsDaySpecialCurrent,

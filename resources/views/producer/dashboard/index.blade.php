@@ -180,6 +180,39 @@ thead tr th {
                 </div>
             </div>
         </div>
+        <div class="col-sm-6">
+            <div class="card" style="overflow: auto;">
+                <div class="card-header" id="twoday">
+                    <strong>two day ({{Carbon::parse($next)->addDays(-1)->format('Y-m-d')}})</strong>
+                </div>
+                <div class="card-body" id="twoday">
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $prev, '#twoday']) }}"> Prev</a>
+                    <a class="btn btn-sm btn-success" href="{{ route('producer.dashboard.index', ['day' => $next, '#twoday']) }}"> Next</a>
+                </div>
+                    <table class="table table-responsive-sm table-bordered table-striped text-center tmp">
+                        <thead>
+                            <tr>
+                                <td>stt</th>
+                                <td>key</th>
+                                <td>ratio</th>
+                                <td>count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach ($twoDay as $item)
+                            <tr class="{{$item['exist'] ? 'btn-success' : ''}}">
+                                <td>{{$item['stt']}}</td>
+                                <td>{{$item['key1']}} | {{$item['key2']}}</td>
+                                <td>{{$item['true']}}/{{$item['total']}}({{$item['ratio']}})</td>
+                                <td>{{$item['count']}}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>  
         <div class="col-sm-12">
             <div class="card" style="overflow: auto;">
                 <div class="card-header" id="all1">

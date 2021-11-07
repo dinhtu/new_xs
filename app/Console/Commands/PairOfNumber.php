@@ -46,8 +46,8 @@ class PairOfNumber extends Command
     {
         // $startDate = empty($maxDate) ? "2021-01-01" : Carbon::parse($maxDate)->addDays(1)->format('Y-m-d');
         $startDate = "2020-01-01";
-        $now = Carbon::parse('2021-09-01');
-        // $now = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d'));
+        // $now = Carbon::parse('2021-08-01');
+        $now = Carbon::parse(Carbon::now()->format('Y-m-d'));
         $totalMoney = 0;
 
         $pairOfNumber = [];
@@ -111,18 +111,25 @@ class PairOfNumber extends Command
                 $q->whereDate('day', Carbon::parse($startDate));
             })->get();
 
-            $pairOfNumberCount = collect($pairOfNumberCount)->sortByDesc('count')->first();
+            $pairOfNumberCount = collect($pairOfNumberCount)->sortByDesc('count')->toArray();
             $count = 0;
-            foreach ($pairOfNumberCount['key'] as $key => $itemPair) {
-                foreach ($xsDetailsDay as $item) {
-                    if ($item->item == $itemPair) {
-                        $count++;
+            $i = 0;
+            foreach ($pairOfNumberCount as $key => $itemPairOfNumberCount) {
+                if ($i > 2) {
+                    continue;
+                }
+                foreach ($itemPairOfNumberCount['key'] as $key => $itemPair) {
+                    foreach ($xsDetailsDay as $item) {
+                        if ($item->item == $itemPair) {
+                            $count++;
+                        }
                     }
                 }
+                $i++;
             }
-            if ($xsDetailsDay) {
-                $totalMoney += $count *800000 - 20*21900;
-                Log::channel('log_batch')->info($startDate . '  :' . ($count *800000 - 20*21900));
+            if ($xsDetailsDay && $pairOfNumberCount) {
+                $totalMoney += $count *800000 - 60*21900;
+                Log::channel('log_batch')->info($startDate . '  :' . ($count *800000 - 60*21900));
             }
             $startDate = Carbon::parse($startDate)->addDays(1)->format('Y-m-d');
         }
